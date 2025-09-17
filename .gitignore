@@ -11,7 +11,7 @@ build/
 coverage/
 .DS_Store
 *.local
-*.env.*
+*.env
 logs/
 *.log
 .idea/

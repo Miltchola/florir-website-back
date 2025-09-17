@@ -15,9 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: [
-    'https://florirvercel.app',
-
-    'http://localhost:5173', // ajuste para a porta do seu frontend local
+    'https://florirvercel.app', // URL de produção
+    'http://localhost:5173', // Ajuste para a porta do seu Frontend local
   ],
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
   credentials: true,

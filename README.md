@@ -47,6 +47,7 @@ source requests/auth/POST_Login_Success.sh
 
 ---
 ## Variáveis de ambiente que eu utilizei (.env):
+## Lembrar de mudar a senha, pois foi registrada nesse README
 
 PORT=3000
 MONGO_URI=mongodb+srv://miltonkiefermello:sLPfl234hDrY74BD@clusterexpress-exemplo.lcpczqy.mongodb.net/?retryWrites=true&w=majority&appName=ClusterExpress-exemplo
