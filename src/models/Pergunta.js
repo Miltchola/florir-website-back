@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const perguntaSchema = new mongoose.Schema({
-    pergunta: {
+    question: {
         type: String,
         required: true,
     },
-    resposta: {
+    answer: {
         type: String,
         required: true,
     },
