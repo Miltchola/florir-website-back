@@ -1,5 +1,6 @@
 import express from 'express';
 import contatoController from '../controller/contato.controller.js';
+import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 

@@ -1,5 +1,6 @@
 import express from 'express';
 import perguntaController from '../controller/pergunta.controller.js';
+import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 

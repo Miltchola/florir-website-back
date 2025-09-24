@@ -1,5 +1,6 @@
 import express from 'express';
 import produtoController from '../controller/produto.controller.js';
+import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 
