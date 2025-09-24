@@ -4,7 +4,7 @@ import perguntaController from '../controller/pergunta.controller.js';
 const router = express.Router();
 
 // Rota para criar uma nova pergunta (POST /perguntas)
-router.post('/', perguntaController.createPergunta);
+router.post('/', verifyToken, perguntaController.createPergunta);
 
 // Rota para buscar todas as perguntas (GET /perguntas)
 router.get('/', perguntaController.getAllPerguntas);
@@ -13,9 +13,9 @@ router.get('/', perguntaController.getAllPerguntas);
 router.get('/:id', perguntaController.getPerguntaById);
 
 // Rota para atualizar uma pergunta por ID (PATCH /perguntas/:id)
-router.patch('/:id', perguntaController.updatePerguntaById);
+router.patch('/:id', verifyToken, perguntaController.updatePerguntaById);
 
 // Rota para deletar uma pergunta por ID (DELETE /perguntas/:id)
-router.delete('/:id', perguntaController.deletePerguntaById);
+router.delete('/:id', verifyToken, perguntaController.deletePerguntaById);
 
 export default router;
