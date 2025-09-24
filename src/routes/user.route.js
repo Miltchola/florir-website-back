@@ -1,5 +1,6 @@
 import express from 'express';
 import userController from '../controller/user.controller.js';
+import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 
@@ -13,6 +14,6 @@ router.post('/login', userController.login);
 router.get('/:identifier', userController.getUserByIdentifier);
 
 // Rota para atualizar as informações do perfil de um usuário
-router.put('/:identifier/profile', userController.updateProfile);
+router.put('/:identifier/profile', verifyToken, userController.updateProfile);
 
 export default router;

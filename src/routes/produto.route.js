@@ -4,7 +4,7 @@ import produtoController from '../controller/produto.controller.js';
 const router = express.Router();
 
 // Rota para criar um novo produto (POST /produtos)
-router.post('/', produtoController.createProduto);
+router.post('/', verifyToken,produtoController.createProduto);
 
 // Rota para buscar todos os produtos (GET /produtos)
 router.get('/', produtoController.getAllProdutos);
@@ -13,9 +13,9 @@ router.get('/', produtoController.getAllProdutos);
 router.get('/:id', produtoController.getProdutoById);
 
 // Rota para atualizar um produto por ID (PATCH /produtos/:id)
-router.patch('/:id', produtoController.updateProdutoById);
+router.patch('/:id', verifyToken, produtoController.updateProdutoById);
 
 // Rota para deletar um produto por ID (DELETE /produtos/:id)
-router.delete('/:id', produtoController.deleteProdutoById);
+router.delete('/:id', verifyToken, produtoController.deleteProdutoById);
 
 export default router;
