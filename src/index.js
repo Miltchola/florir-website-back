@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: [
-    'https://florirvercel.app', // URL de produção
+    'https://florir-website-front.vercel.app', // URL de produção
     'http://localhost:5173', // Ajuste para a porta do seu Frontend local
     'http://localhost:3000', // Ajuste para a porta do seu Frontend local
     'https://improved-dollop-459xrw5g7wqfgr4-3000.app.github.dev' // Front Local - Code Space - Hugo
