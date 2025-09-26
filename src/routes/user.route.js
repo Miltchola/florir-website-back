@@ -1,191 +1,19 @@
 import express from 'express';
 import userController from '../controller/user.controller.js';
+import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: Rotas relacionadas a usuários
- */
-
-/**
- * @swagger
- * /users/register:
- *   post:
- *     summary: Registra um novo usuário
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - username
- *               - email
- *               - password
- *             properties:
- *               username:
- *                 type: string
- *                 example: "johndoe"
- *               email:
- *                 type: string
- *                 example: "john@example.com"
- *               password:
- *                 type: string
- *                 example: "senha123"
- *     responses:
- *       201:
- *         description: Usuário registrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 username:
- *                   type: string
- *                 email:
- *                   type: string
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *       400:
- *         description: Erro na requisição
- */
+// Rota para registrar um novo usuário
 router.post('/register', userController.register);
 
-/**
- * @swagger
- * /users/login:
- *   post:
- *     summary: Realiza login do usuário
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - username
- *               - email
- *               - password
- *             properties:
- *               username:
- *                 type: string
- *                 example: "johndoe"
- *               email:
- *                 type: string
- *                 example: "john@example.com"
- *               password:
- *                 type: string
- *                 example: "senha123"
- *     responses:
- *       200:
- *         description: Login bem-sucedido
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *                 user:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                     username:
- *                       type: string
- *                     email:
- *                       type: string
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                     updatedAt:
- *                       type: string
- *                       format: date-time
- *       401:
- *         description: Credenciais inválidas
- */
+// Rota para autenticar um usuário e obter um token
 router.post('/login', userController.login);
 
-/**
- * @swagger
- * /users/{identifier}:
- *   get:
- *     summary: Busca um usuário por username ou email
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: identifier
- *         required: true
- *         schema:
- *           type: string
- *         description: Nome de usuário ou email
- *     responses:
- *       200:
- *         description: Usuário encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 username:
- *                   type: string
- *                 email:
- *                   type: string
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *       404:
- *         description: Usuário não encontrado
- */
+// Rota para buscar um usuário por nome de usuário ou email
 router.get('/:identifier', userController.getUserByIdentifier);
 
-/**
- * @swagger
- * /users/{identifier}/profile:
- *   put:
- *     summary: Atualiza dados do usuário
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: identifier
- *         required: true
- *         schema:
- *           type: string
- *         description: Nome de usuário ou email
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Perfil atualizado com sucesso
- *       404:
- *         description: Usuário não encontrado
- */
-router.put('/:identifier/profile', userController.updateProfile);
+// Rota para atualizar as informações do perfil de um usuário
+router.put('/:identifier/profile', verifyToken, userController.updateProfile);
 
 export default router;

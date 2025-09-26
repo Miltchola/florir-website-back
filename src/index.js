@@ -1,25 +1,29 @@
 import express from "express";
 import dotenv from "dotenv";
-import db from "./database/configdb.js";
-import userRoute from "./routes/user.route.js";
 import cors from 'cors';
-
-import User from './models/User.js';
+import db from "./database/configdb.js";
 import swaggerMiddleware from "./middleware/swagger.js";
+
+import userRoute from "./routes/user.route.js";
+import produtoRoute from "./routes/produto.route.js";
+import contatoRoute from "./routes/contato.route.js";
+import perguntaRoute from "./routes/pergunta.route.js";
 
 dotenv.config();
 db.connect();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: [
-    'https://florirvercel.app',
-
-    'http://localhost:5173', // ajuste para a porta do seu frontend local
+    'https://florirvercel.app', // URL de produção
+    'http://localhost:5173', // Ajuste para a porta do seu Frontend local
+    'http://localhost:3000', // Ajuste para a porta do seu Frontend local
+    'https://improved-dollop-459xrw5g7wqfgr4-3000.app.github.dev' // Front Local - Code Space - Hugo
   ],
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 204
 };
@@ -36,9 +40,9 @@ app.get("/", (req, res) => {
 
 // Rotas da API
 app.use("/users", userRoute);
-
-
-
+app.use("/produtos", produtoRoute);
+app.use("/contatos", contatoRoute);
+app.use("/perguntas", perguntaRoute);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}/`);
