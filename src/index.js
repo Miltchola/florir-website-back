@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from 'cors';
+import { fileURLToPath } from 'url';
 import db from "./database/configdb.js";
 import swaggerMiddleware from "./middleware/swagger.js";
 
@@ -15,13 +16,10 @@ db.connect();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [];
+
 const corsOptions = {
-  origin: [
-    'https://florir-website-front.vercel.app', // URL de produção
-    'http://localhost:5173', // Ajuste para a porta do seu Frontend local
-    'http://localhost:3000', // Ajuste para a porta do seu Frontend local
-    'https://improved-dollop-459xrw5g7wqfgr4-3000.app.github.dev' // Front Local - Code Space - Hugo
-  ],
+  origin: allowedOrigins,
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -44,6 +42,13 @@ app.use("/produtos", produtoRoute);
 app.use("/contatos", contatoRoute);
 app.use("/perguntas", perguntaRoute);
 
-app.listen(PORT, () => {
+export default app;
+
+const __filename = fileURLToPath(import.meta.url);
+const scriptPath = process.argv[1];
+
+if (scriptPath === __filename) {
+  app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}/`);
-});
+  });
+}
