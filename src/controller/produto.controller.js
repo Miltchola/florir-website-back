@@ -1,64 +1,52 @@
 import Produto from '../models/Produto.js';
+import { AppError, ERROR_MESSAGES } from '../utils/errors.js';
+import sendSuccess from '../utils/successResponse.js';
 
-const createProduto = async (req, res) => {
-    try {
-        const newProduto = new Produto(req.body);
-        await newProduto.save();
-        res.status(201).json(newProduto);
-    } catch (error) {
-        res.status(400).json({ message: 'Erro ao criar produto', error: error.message });
-    }
+const handleAsync = fn => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-const getAllProdutos = async (req, res) => {
-    try {
-        const produtos = await Produto.find();
-        res.status(200).json(produtos);
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar produtos', error: error.message });
-    }
-};
+const createProduto = handleAsync(async (req, res, next) => {
+    const newProduto = new Produto(req.body);
+    await newProduto.save();
+    sendSuccess(res, 201, newProduto, 'Produto criado com sucesso.');
+});
 
-const getProdutoById = async (req, res) => {
-    try {
-        const produto = await Produto.findById(req.params.id);
-        if (!produto) {
-            return res.status(404).json({ message: 'Produto não encontrado' });
-        }
-        res.status(200).json(produto);
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar produto', error: error.message });
-    }
-};
+const getAllProdutos = handleAsync(async (req, res, next) => {
+    const produtos = await Produto.find();
+    sendSuccess(res, 200, produtos);
+});
 
-const updateProdutoById = async (req, res) => {
-    try {
-        const updatedProduto = await Produto.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
-        if (!updatedProduto) {
-            return res.status(404).json({ message: 'Produto não encontrado para atualizar' });
-        }
-        res.status(200).json(updatedProduto);
-    } catch (error) {
-        res.status(400).json({ message: 'Erro ao atualizar produto', error: error.message });
+const getProdutoById = handleAsync(async (req, res, next) => {
+    const produto = await Produto.findById(req.params.id);
+    if (!produto) {
+        const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Produto');
+        throw new AppError(statusCode, message);
     }
-};
+    sendSuccess(res, 200, produto);
+});
 
-const deleteProdutoById = async (req, res) => {
-    try {
-        const deletedProduto = await Produto.findByIdAndDelete(req.params.id);
-        if (!deletedProduto) {
-            return res.status(404).json({ message: 'Produto não encontrado para deletar' });
-        }
-        res.status(200).json({ message: 'Produto deletado com sucesso' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao deletar produto', error: error.message });
+const updateProdutoById = handleAsync(async (req, res, next) => {
+    const updatedProduto = await Produto.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    );
+    if (!updatedProduto) {
+        const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Produto');
+        throw new AppError(statusCode, message);
     }
-};
+    sendSuccess(res, 200, updatedProduto, 'Produto atualizado com sucesso.');
+});
 
+const deleteProdutoById = handleAsync(async (req, res, next) => {
+    const deletedProduto = await Produto.findByIdAndDelete(req.params.id);
+    if (!deletedProduto) {
+        const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Produto');
+        throw new AppError(statusCode, message);
+    }
+    sendSuccess(res, 200, null, 'Produto deletado com sucesso.');
+});
 
 export default {
     createProduto,
