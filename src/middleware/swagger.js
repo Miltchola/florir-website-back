@@ -3,6 +3,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import express from "express";
 
 const router = express.Router();
+const PORT = process.env.PORT || 8080;
 
 const options = {
   definition: {
@@ -18,7 +19,7 @@ const options = {
         description: "Servidor de Produção (Vercel)",
       },
       {
-        url: "http://localhost:8080",
+        url: `http://localhost:${PORT}`,
         description: "Servidor Local (Desenvolvimento)",
       },
     ],
@@ -41,8 +42,6 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsdoc(options);
-
-// Custom options for Swagger UI, including CDN links for Vercel compatibility
 const swaggerUiOptions = {
   customCssUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.css",
@@ -58,7 +57,8 @@ router.use(
   setup(swaggerSpec, swaggerUiOptions)
 );
 
-console.log("✅ Swagger middleware carregado!");
-console.log(`📄 Documentação disponível em: http://localhost:8008/docs`);
+if (process.env.NODE_ENV !== 'production') {
+  console.log(`Documentação com Swagger disponível em: http://localhost:${PORT}/docs`);
+}
 
 export default router;
