@@ -42,6 +42,11 @@ app.use("/produtos", produtoRoute);
 app.use("/contatos", contatoRoute);
 app.use("/perguntas", perguntaRoute);
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({ message: 'Runtime error' });
+});
+
 export default app;
 
 const __filename = fileURLToPath(import.meta.url);
