@@ -23,3 +23,5 @@ logs/
 *.tmp
 # OS generated
 Thumbs.db
+get.sh
+todo.txt
