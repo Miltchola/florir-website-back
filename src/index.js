@@ -9,6 +9,7 @@ import userRoute from "./routes/user.route.js";
 import produtoRoute from "./routes/produto.route.js";
 import contatoRoute from "./routes/contato.route.js";
 import perguntaRoute from "./routes/pergunta.route.js";
+import textoRoute from "./routes/texto.route.js";
 
 dotenv.config();
 db.connect();
@@ -41,6 +42,7 @@ app.use("/users", userRoute);
 app.use("/produtos", produtoRoute);
 app.use("/contatos", contatoRoute);
 app.use("/perguntas", perguntaRoute);
+app.use("/textos", textoRoute);
 
 app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;

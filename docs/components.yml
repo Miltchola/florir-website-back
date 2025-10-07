@@ -145,7 +145,39 @@ components:
           type: string
         answer:
           type: string
+    
+    Texto:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64a2f8c8d8e9a2b8e0a7b8b2"
+        textoBase:
+          type: string
+          example: "Bem-vindo à Florir"
+        subTexto:
+          type: string
+          example: "As melhores flores desidratadas da região."
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
           
+    TextoPayload:
+      type: object
+      required:
+        - textoBase
+        - subTexto
+      properties:
+        textoBase:
+          type: string
+          example: "Bem-vindo à Florir"
+        subTexto:
+          type: string
+          example: "As melhores flores desidratadas da região."
+
     Error:
       type: object
       properties:

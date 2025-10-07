@@ -24,4 +24,5 @@ logs/
 # OS generated
 Thumbs.db
 get.sh
+post.sh
 todo.txt
