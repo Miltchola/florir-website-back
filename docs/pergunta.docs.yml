@@ -1,0 +1,151 @@
+tags:
+  name: Perguntas
+  description: Gerenciamento de perguntas frequentes (FAQ)
+
+paths:
+  /perguntas:
+    get:
+      summary: Retorna todas as perguntas
+      tags: [Perguntas]
+      responses:
+        '200':
+          description: Lista de perguntas e respostas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pergunta'
+    post:
+      summary: Cria uma nova pergunta
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaPayload'
+      responses:
+        '201':
+          description: Pergunta criada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta criada com sucesso.
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+
+  /perguntas/{id}:
+    get:
+      summary: Busca uma pergunta por ID
+      tags: [Perguntas]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID da pergunta.
+      responses:
+        '200':
+          description: Dados da pergunta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+        '404':
+          description: Pergunta não encontrada.
+    patch:
+      summary: Atualiza uma pergunta por ID
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID da pergunta.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaPayload'
+      responses:
+        '200':
+          description: Pergunta atualizada.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta atualizada com sucesso.
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+        '404':
+          description: Pergunta não encontrada.
+    delete:
+      summary: Deleta uma pergunta por ID
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID da pergunta.
+      responses:
+        '200':
+          description: Pergunta deletada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta deletada com sucesso.
+                  data:
+                    type: 'object'
+                    nullable: true
+        '404':
+          description: Pergunta não encontrada.

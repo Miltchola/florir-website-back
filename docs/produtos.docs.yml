@@ -1,0 +1,156 @@
+tags:
+  name: Produtos
+  description: Gerenciamento de produtos
+
+paths:
+  /produtos:
+    get:
+      summary: Retorna todos os produtos
+      tags: [Produtos]
+      responses:
+        '200':
+          description: Lista de produtos retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Produto'
+    post:
+      summary: Cria um novo produto
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoPayload'
+      responses:
+        '201':
+          description: Produto criado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto criado com sucesso.
+                  data:
+                    $ref: '#/components/schemas/Produto'
+
+  /produtos/{id}:
+    get:
+      summary: Busca um produto por ID
+      tags: [Produtos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID do produto.
+      responses:
+        '200':
+          description: Dados do produto retornados com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    $ref: '#/components/schemas/Produto'
+        '404':
+          description: Produto não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Atualiza um produto por ID
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID do produto.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoPayload'
+      responses:
+        '200':
+          description: Produto atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto atualizado com sucesso.
+                  data:
+                    $ref: '#/components/schemas/Produto'
+        '404':
+          description: Produto não encontrado.
+    delete:
+      summary: Deleta um produto por ID
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: O ID do produto.
+      responses:
+        '200':
+          description: Produto deletado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto deletado com sucesso.
+                  data:
+                    type: object
+                    nullable: true
+                    example: null
+        '404':
+          description: Produto não encontrado.

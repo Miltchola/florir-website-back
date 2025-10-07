@@ -4,16 +4,10 @@ import verifyToken from '../middleware/jwt.token.middleware.js';
 
 const router = express.Router();
 
-// Rota para registrar um novo usuário
 router.post('/register', userController.register);
-
-// Rota para autenticar um usuário e obter um token
 router.post('/login', userController.login);
 
-// Rota para buscar um usuário por nome de usuário ou email
-router.get('/:identifier', userController.getUserByIdentifier);
-
-// Rota para atualizar as informações do perfil de um usuário
-router.put('/:identifier/profile', verifyToken, userController.updateProfile);
+router.get('/me', verifyToken, userController.getMe);
+router.patch('/me', verifyToken, userController.updateMe);
 
 export default router;

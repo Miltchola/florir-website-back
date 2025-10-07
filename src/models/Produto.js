@@ -21,6 +21,10 @@ const produtoSchema = new mongoose.Schema({
     tipo: {
         type: String,
     },
+    disponiveis: {
+        type: Number,
+        default: 0,
+    }
 }, {
     timestamps: true
 });
