@@ -16,23 +16,6 @@ components:
           type: string
           format: date-time
     
-    UserRegister:
-      type: object
-      required:
-        - username
-        - email
-        - password
-      properties:
-        username:
-          type: string
-          example: "johndoe"
-        email:
-          type: string
-          example: "john@example.com"
-        password:
-          type: string
-          example: "senha123"
-
     UserLogin:
       type: object
       required:
@@ -41,7 +24,134 @@ components:
       properties:
         email:
           type: string
-          example: "john@example.com"
+          example: "admin@example.com"
         password:
           type: string
           example: "senha123"
+
+    Produto:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "63f7b2b7e012a4b8c8a7b8b2"
+        imagem:
+          type: string
+        nome:
+          type: string
+          example: "Buquê de Rosas Secas"
+        descricao:
+          type: string
+          example: "Um lindo buquê com rosas vermelhas desidratadas."
+        preco:
+          type: string
+          description: 'Preço do produto (formato string, ex: "25.50").'
+          example: "25.50"
+        recomendado:
+          type: boolean
+        tipo:
+          type: string
+          example: "Buquê"
+        disponiveis:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProdutoPayload:
+      type: object
+      properties:
+        imagem:
+          type: string
+        nome:
+          type: string
+        descricao:
+          type: string
+        preco:
+          type: string
+          example: "25.50"
+        recomendado:
+          type: boolean
+        tipo:
+          type: string
+        disponiveis:
+          type: number
+
+    Contato:
+      type: object
+      properties:
+        _id:
+          type: string
+        instagram:
+          type: string
+        tiktok:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        ddd:
+          type: string
+        whatsapp:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    ContatoPayload:
+      type: object
+      properties:
+        instagram:
+          type: string
+        tiktok:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        ddd:
+          type: string
+        whatsapp:
+          type: string
+
+    Pergunta:
+      type: object
+      properties:
+        _id:
+          type: string
+        question:
+          type: string
+          example: "Qual o tempo de duração das flores?"
+        answer:
+          type: string
+          example: "Nossas flores desidratadas podem durar de 1 a 3 anos."
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    PerguntaPayload:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+          
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "fail"
+        message:
+          type: string
+          example: "Recurso não encontrado."
