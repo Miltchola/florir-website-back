@@ -28,4 +28,4 @@ Thumbs.db
 *.sh
 todo.txt
 test-images/
-.deccontainer/
+.devcontainer/
