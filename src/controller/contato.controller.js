@@ -7,20 +7,13 @@ const handleAsync = fn => (req, res, next) => {
 };
 
 const createContato = handleAsync(async (req, res, next) => {
-    const existingContato = await Contato.findOne();
-    if (existingContato) {
-        throw new AppError(ERROR_MESSAGES.CONTATO_EXISTS.statusCode, ERROR_MESSAGES.CONTATO_EXISTS.message);
-    }
     const newContato = new Contato(req.body);
     await newContato.save();
     sendSuccess(res, 201, newContato, 'Contato criado com sucesso.');
 });
 
 const getAllContatos = handleAsync(async (req, res, next) => {
-    const contatos = await Contato.findOne();
-    if (!contatos) {
-        return res.status(204).send();
-    }
+    const contatos = await Contato.find(); 
     sendSuccess(res, 200, contatos);
 });
 

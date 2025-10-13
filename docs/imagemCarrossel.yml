@@ -1,16 +1,16 @@
 tags:
-  - name: Contatos
-    description: Gerenciamento das informações de contato.
+  - name: Imagens do Carrossel
+    description: Gerenciamento das imagens do carrossel.
 
 paths:
-  /contatos:
+  /imagens-carrossel:
     get:
-      summary: Obter todas as informações de contato
-      tags: [Contatos]
-      description: Retorna todas as entradas de contato. Geralmente, haverá apenas uma. Este endpoint é público.
+      summary: Obter todas as imagens do carrossel
+      tags: [Imagens do Carrossel]
+      description: Retorna uma lista de todas as imagens do carrossel. Este endpoint é público.
       responses:
         '200':
-          description: Uma lista com as informações de contato.
+          description: Uma lista de imagens do carrossel.
           content:
             application/json:
               schema:
@@ -21,41 +21,41 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Contato'
+                      $ref: '#/components/schemas/ImagemCarrossel'
     post:
-      summary: Criar nova informação de contato
-      tags: [Contatos]
+      summary: Criar uma nova imagem para o carrossel
+      tags: [Imagens do Carrossel]
       security:
         - bearerAuth: []
-      description: Adiciona uma nova entrada de contato. Requer autenticação.
+      description: Adiciona uma nova imagem ao carrossel. Requer autenticação.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              $ref: '#/components/schemas/ImagemCarrosselPayload'
       responses:
         '201':
-          description: Contato criado com sucesso.
+          description: Imagem criada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato criado com sucesso. }
+                  message: { type: string, example: Imagem do carrossel criada com sucesso. }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/ImagemCarrossel'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
 
-  /contatos/{id}:
+  /imagens-carrossel/{id}:
     get:
-      summary: Obter informação de contato por ID
-      tags: [Contatos]
-      description: Retorna uma informação de contato específica pelo seu ID. Este endpoint é público.
+      summary: Obter imagem do carrossel por ID
+      tags: [Imagens do Carrossel]
+      description: Retorna uma imagem específica do carrossel pelo seu ID. Este endpoint é público.
       parameters:
         - name: id
           in: path
@@ -64,7 +64,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Dados de contato.
+          description: Dados da imagem.
           content:
             application/json:
               schema:
@@ -73,16 +73,16 @@ paths:
                   status: { type: string, example: success }
                   message: { type: string, example: Success }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/ImagemCarrossel'
         '404':
           $ref: '#/components/responses/NotFound'
 
     patch:
-      summary: Atualizar informação de contato por ID
-      tags: [Contatos]
+      summary: Atualizar uma imagem do carrossel por ID
+      tags: [Imagens do Carrossel]
       security:
         - bearerAuth: []
-      description: Atualiza uma informação de contato existente. Requer autenticação.
+      description: Atualiza uma imagem existente do carrossel. Requer autenticação.
       parameters:
         - name: id
           in: path
@@ -94,19 +94,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              $ref: '#/components/schemas/ImagemCarrosselPayload'
       responses:
         '200':
-          description: Contato atualizado com sucesso.
+          description: Imagem atualizada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato atualizado com sucesso. }
+                  message: { type: string, example: Imagem do carrossel atualizada com sucesso. }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/ImagemCarrossel'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -115,11 +115,11 @@ paths:
           $ref: '#/components/responses/NotFound'
 
     delete:
-      summary: Deletar informação de contato por ID
-      tags: [Contatos]
+      summary: Deletar uma imagem do carrossel por ID
+      tags: [Imagens do Carrossel]
       security:
         - bearerAuth: []
-      description: Deleta uma informação de contato. Requer autenticação.
+      description: Deleta uma imagem do carrossel. Requer autenticação.
       parameters:
         - name: id
           in: path
@@ -128,14 +128,14 @@ paths:
             type: string
       responses:
         '200':
-          description: Contato deletado com sucesso.
+          description: Imagem deletada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato deletado com sucesso. }
+                  message: { type: string, example: Imagem do carrossel deletada com sucesso. }
                   data:
                     type: object
                     nullable: true

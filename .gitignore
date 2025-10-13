@@ -23,6 +23,8 @@ logs/
 *.tmp
 # OS generated
 Thumbs.db
-get.sh
-post.sh
+
+# Personal
+*.sh
 todo.txt
+test-images/
