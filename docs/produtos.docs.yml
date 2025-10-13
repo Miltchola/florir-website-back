@@ -1,35 +1,33 @@
 tags:
-  name: Produtos
-  description: Gerenciamento de produtos
+  - name: Produtos
+    description: Gerenciamento de produtos.
 
 paths:
   /produtos:
     get:
-      summary: Retorna todos os produtos
+      summary: Obter todos os produtos
       tags: [Produtos]
+      description: Retorna uma lista de todos os produtos. Este endpoint é público.
       responses:
         '200':
-          description: Lista de produtos retornada com sucesso.
+          description: Uma lista de produtos.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Success
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
                   data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Produto'
     post:
-      summary: Cria um novo produto
+      summary: Criar um novo produto
       tags: [Produtos]
       security:
         - bearerAuth: []
+      description: Adiciona um novo produto. Requer autenticação.
       requestBody:
         required: true
         content:
@@ -44,60 +42,53 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Produto criado com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto criado com sucesso. }
                   data:
                     $ref: '#/components/schemas/Produto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /produtos/{id}:
     get:
-      summary: Busca um produto por ID
+      summary: Obter produto por ID
       tags: [Produtos]
+      description: Retorna um produto específico pelo seu ID. Este endpoint é público.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID do produto.
       responses:
         '200':
-          description: Dados do produto retornados com sucesso.
+          description: Dados do produto.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Success
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
                   data:
                     $ref: '#/components/schemas/Produto'
         '404':
-          description: Produto não encontrado.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/NotFound'
+
     patch:
-      summary: Atualiza um produto por ID
+      summary: Atualizar um produto por ID
       tags: [Produtos]
       security:
         - bearerAuth: []
+      description: Atualiza um produto existente. Requer autenticação.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID do produto.
       requestBody:
         required: true
         content:
@@ -112,28 +103,29 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Produto atualizado com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto atualizado com sucesso. }
                   data:
                     $ref: '#/components/schemas/Produto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Produto não encontrado.
+          $ref: '#/components/responses/NotFound'
+
     delete:
-      summary: Deleta um produto por ID
+      summary: Deletar um produto por ID
       tags: [Produtos]
       security:
         - bearerAuth: []
+      description: Deleta um produto. Requer autenticação.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID do produto.
       responses:
         '200':
           description: Produto deletado com sucesso.
@@ -142,15 +134,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Produto deletado com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto deletado com sucesso. }
                   data:
                     type: object
                     nullable: true
-                    example: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Produto não encontrado.
+          $ref: '#/components/responses/NotFound'

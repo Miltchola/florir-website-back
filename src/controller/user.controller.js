@@ -8,7 +8,6 @@ import bcrypt from "bcrypt";
 const handleAsync = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
-
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const register = handleAsync(async (req, res, next) => {
@@ -23,7 +22,10 @@ const register = handleAsync(async (req, res, next) => {
 
 const login = handleAsync(async (req, res, next) => {
     const { email, password } = req.body;
-    if (!email || !password) throw new AppError(ERROR_MESSAGES.USER_MISSING_FIELDS.statusCode, ERROR_MESSAGES.USER_MISSING_FIELDS.message);
+    if (!email || !password) {
+        const { statusCode, message } = ERROR_MESSAGES.AUTH_MISSING_CREDENTIALS;
+        throw new AppError(statusCode, message);
+    }
     
     const user = await authenticateUser({ email, password });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -56,7 +58,8 @@ const updateMe = handleAsync(async (req, res, next) => {
     }
 
     if (Object.keys(updateData).length === 0) {
-        throw new AppError(400, 'No fields provided for update.');
+        const { statusCode, message } = ERROR_MESSAGES.UPDATE_NO_FIELDS;
+        throw new AppError(statusCode, message);
     }
 
     const updatedUser = await User.findByIdAndUpdate(req.userId, updateData, { new: true }).select('username email');
@@ -69,9 +72,19 @@ const updateMe = handleAsync(async (req, res, next) => {
     sendSuccess(res, 200, updatedUser, 'Perfil atualizado com sucesso.');
 });
 
+const deleteMe = handleAsync(async (req, res, next) => {
+    const user = await User.findByIdAndDelete(req.userId);
+    if (!user) {
+        const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Usuário');
+        throw new AppError(statusCode, message);
+    }
+    sendSuccess(res, 200, null, 'Usuário deletado com sucesso.');
+});
+
 export default {
     register,
     login,
     getMe,
-    updateMe
+    updateMe,
+    deleteMe
 };

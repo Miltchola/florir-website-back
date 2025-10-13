@@ -4,6 +4,10 @@ const produtoSchema = new mongoose.Schema({
     imagem: {
         type: String,
     },
+    altText:{
+        type: String,
+        default: 'imagem do produto'
+    },
     nome: {
         type: String,
         required: true,
@@ -12,7 +16,7 @@ const produtoSchema = new mongoose.Schema({
         type: String,
     },
     preco: {
-        type: String,
+        type: Number,
     },
     recomendado: {
         type: Boolean,

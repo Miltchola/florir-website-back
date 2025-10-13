@@ -9,7 +9,8 @@ import userRoute from "./routes/user.route.js";
 import produtoRoute from "./routes/produto.route.js";
 import contatoRoute from "./routes/contato.route.js";
 import perguntaRoute from "./routes/pergunta.route.js";
-import textoRoute from "./routes/texto.route.js";
+import heroSectionRoute from "./routes/heroSection.route.js";
+import imagemCarrosselRoute from "./routes/imagemCarrossel.route.js";
 
 dotenv.config();
 db.connect();
@@ -32,9 +33,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(swaggerMiddleware);
 
-// Rotas públicas
+// Rota pública
 app.get("/", (req, res) => {
-    res.send({message: 'Florir: As melhores flores desidratadas da região!'});
+    res.send({message: 'Florir - As melhores flores desidratadas da região!'});
 });
 
 // Rotas da API
@@ -42,7 +43,8 @@ app.use("/users", userRoute);
 app.use("/produtos", produtoRoute);
 app.use("/contatos", contatoRoute);
 app.use("/perguntas", perguntaRoute);
-app.use("/textos", textoRoute);
+app.use("/hero-section", heroSectionRoute);
+app.use("/imagens-carrossel", imagemCarrosselRoute);
 
 app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;

@@ -1,35 +1,33 @@
 tags:
-  name: Perguntas
-  description: Gerenciamento de perguntas frequentes (FAQ)
+  - name: Perguntas
+    description: Gerenciamento de Perguntas Frequentes (FAQ).
 
 paths:
   /perguntas:
     get:
-      summary: Retorna todas as perguntas
+      summary: Obter todas as perguntas
       tags: [Perguntas]
+      description: Retorna uma lista de todas as perguntas frequentes. Este endpoint é público.
       responses:
         '200':
-          description: Lista de perguntas e respostas.
+          description: Uma lista de perguntas.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Success
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
                   data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Pergunta'
     post:
-      summary: Cria uma nova pergunta
+      summary: Criar uma nova pergunta
       tags: [Perguntas]
       security:
         - bearerAuth: []
+      description: Adiciona uma nova pergunta ao FAQ. Requer autenticação.
       requestBody:
         required: true
         content:
@@ -44,26 +42,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Pergunta criada com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta criada com sucesso. }
                   data:
                     $ref: '#/components/schemas/Pergunta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /perguntas/{id}:
     get:
-      summary: Busca uma pergunta por ID
+      summary: Obter pergunta por ID
       tags: [Perguntas]
+      description: Retorna uma pergunta específica pelo seu ID. Este endpoint é público.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID da pergunta.
       responses:
         '200':
           description: Dados da pergunta.
@@ -72,28 +70,25 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Success
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
                   data:
                     $ref: '#/components/schemas/Pergunta'
         '404':
-          description: Pergunta não encontrada.
+          $ref: '#/components/responses/NotFound'
+
     patch:
-      summary: Atualiza uma pergunta por ID
+      summary: Atualizar uma pergunta por ID
       tags: [Perguntas]
       security:
         - bearerAuth: []
+      description: Atualiza uma pergunta existente. Requer autenticação.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID da pergunta.
       requestBody:
         required: true
         content:
@@ -102,34 +97,35 @@ paths:
               $ref: '#/components/schemas/PerguntaPayload'
       responses:
         '200':
-          description: Pergunta atualizada.
+          description: Pergunta atualizada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Pergunta atualizada com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta atualizada com sucesso. }
                   data:
                     $ref: '#/components/schemas/Pergunta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Pergunta não encontrada.
+          $ref: '#/components/responses/NotFound'
+
     delete:
-      summary: Deleta uma pergunta por ID
+      summary: Deletar uma pergunta por ID
       tags: [Perguntas]
       security:
         - bearerAuth: []
+      description: Deleta uma pergunta. Requer autenticação.
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
-          description: O ID da pergunta.
       responses:
         '200':
           description: Pergunta deletada com sucesso.
@@ -138,14 +134,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Pergunta deletada com sucesso.
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta deletada com sucesso. }
                   data:
-                    type: 'object'
+                    type: object
                     nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Pergunta não encontrada.
+          $ref: '#/components/responses/NotFound'

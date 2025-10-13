@@ -1,16 +1,16 @@
 tags:
-  - name: Contatos
-    description: Gerenciamento das informações de contato.
+  - name: Seção Hero
+    description: Gerenciamento do conteúdo da seção principal (hero).
 
 paths:
-  /contatos:
+  /hero-section:
     get:
-      summary: Obter todas as informações de contato
-      tags: [Contatos]
-      description: Retorna todas as entradas de contato. Geralmente, haverá apenas uma. Este endpoint é público.
+      summary: Obter todas as seções hero
+      tags: [Seção Hero]
+      description: Retorna todas as entradas da seção hero. Geralmente, haverá apenas uma. Este endpoint é público.
       responses:
         '200':
-          description: Uma lista com as informações de contato.
+          description: Uma lista de seções hero.
           content:
             application/json:
               schema:
@@ -21,50 +21,51 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Contato'
+                      $ref: '#/components/schemas/HeroSection'
     post:
-      summary: Criar nova informação de contato
-      tags: [Contatos]
+      summary: Criar uma nova seção hero
+      tags: [Seção Hero]
       security:
         - bearerAuth: []
-      description: Adiciona uma nova entrada de contato. Requer autenticação.
+      description: Adiciona uma nova seção hero. Requer autenticação.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              $ref: '#/components/schemas/HeroSectionPayload'
       responses:
         '201':
-          description: Contato criado com sucesso.
+          description: Seção hero criada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato criado com sucesso. }
+                  message: { type: string, example: Seção Hero criada com sucesso. }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/HeroSection'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
 
-  /contatos/{id}:
+  /hero-section/{id}:
     get:
-      summary: Obter informação de contato por ID
-      tags: [Contatos]
-      description: Retorna uma informação de contato específica pelo seu ID. Este endpoint é público.
+      summary: Obter seção hero por ID
+      tags: [Seção Hero]
+      description: Retorna uma seção hero específica pelo seu ID. Este endpoint é público.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
+          description: O ID da seção hero.
       responses:
         '200':
-          description: Dados de contato.
+          description: Dados da seção hero.
           content:
             application/json:
               schema:
@@ -73,16 +74,16 @@ paths:
                   status: { type: string, example: success }
                   message: { type: string, example: Success }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/HeroSection'
         '404':
           $ref: '#/components/responses/NotFound'
 
     patch:
-      summary: Atualizar informação de contato por ID
-      tags: [Contatos]
+      summary: Atualizar uma seção hero por ID
+      tags: [Seção Hero]
       security:
         - bearerAuth: []
-      description: Atualiza uma informação de contato existente. Requer autenticação.
+      description: Atualiza uma seção hero existente. Requer autenticação.
       parameters:
         - name: id
           in: path
@@ -94,32 +95,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              $ref: '#/components/schemas/HeroSectionPayload'
       responses:
         '200':
-          description: Contato atualizado com sucesso.
+          description: Seção hero atualizada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato atualizado com sucesso. }
+                  message: { type: string, example: Seção Hero atualizada com sucesso. }
                   data:
-                    $ref: '#/components/schemas/Contato'
+                    $ref: '#/components/schemas/HeroSection'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
+          
     delete:
-      summary: Deletar informação de contato por ID
-      tags: [Contatos]
+      summary: Deletar uma seção hero por ID
+      tags: [Seção Hero]
       security:
         - bearerAuth: []
-      description: Deleta uma informação de contato. Requer autenticação.
+      description: Deleta uma seção hero. Requer autenticação.
       parameters:
         - name: id
           in: path
@@ -128,14 +129,14 @@ paths:
             type: string
       responses:
         '200':
-          description: Contato deletado com sucesso.
+          description: Seção hero deletada com sucesso.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Contato deletado com sucesso. }
+                  message: { type: string, example: Seção Hero deletada com sucesso. }
                   data:
                     type: object
                     nullable: true

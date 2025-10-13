@@ -3,11 +3,6 @@ import bcrypt from "bcrypt";
 import { AppError, ERROR_MESSAGES } from "../utils/errors.js";
 
 export const registerUser = async ({ username, email, password }) => {
-    const userCount = await User.countDocuments();
-    if (userCount > 0) {
-        throw new AppError(409, 'An admin user already exists. No more users can be created.');
-    }
-
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
         throw new AppError(ERROR_MESSAGES.USER_EMAIL_EXISTS.statusCode, ERROR_MESSAGES.USER_EMAIL_EXISTS.message);
@@ -16,7 +11,12 @@ export const registerUser = async ({ username, email, password }) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({
+        username,
+        email,
+        password: hashedPassword,
+    });
+
     return await newUser.save();
 };
 
