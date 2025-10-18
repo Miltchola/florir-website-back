@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         select: false
+    },
+    admin: {
+        type: Boolean,
+        default: false,
     }
 }, {
     timestamps: true
@@ -21,5 +25,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Exportação do User
 export default User;

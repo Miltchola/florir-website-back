@@ -1,0 +1,148 @@
+tags:
+  - name: Seção Hero
+    description: Gerenciamento do conteúdo da seção principal (hero).
+
+paths:
+  /hero-section:
+    get:
+      summary: Obter todas as seções hero
+      tags: [Seção Hero]
+      description: Retorna todas as entradas da seção hero. Geralmente, haverá apenas uma. Este endpoint é público.
+      responses:
+        '200':
+          description: Uma lista de seções hero.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HeroSection'
+    post:
+      summary: Criar uma nova seção hero
+      tags: [Seção Hero]
+      security:
+        - bearerAuth: []
+      description: Adiciona uma nova seção hero. Requer autenticação.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeroSectionPayload'
+      responses:
+        '201':
+          description: Seção hero criada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Seção Hero criada com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/HeroSection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /hero-section/{id}:
+    get:
+      summary: Obter seção hero por ID
+      tags: [Seção Hero]
+      description: Retorna uma seção hero específica pelo seu ID. Este endpoint é público.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: O ID da seção hero.
+      responses:
+        '200':
+          description: Dados da seção hero.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    $ref: '#/components/schemas/HeroSection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Atualizar uma seção hero por ID
+      tags: [Seção Hero]
+      security:
+        - bearerAuth: []
+      description: Atualiza uma seção hero existente. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeroSectionPayload'
+      responses:
+        '200':
+          description: Seção hero atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Seção Hero atualizada com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/HeroSection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    delete:
+      summary: Deletar uma seção hero por ID
+      tags: [Seção Hero]
+      security:
+        - bearerAuth: []
+      description: Deleta uma seção hero. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Seção hero deletada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Seção Hero deletada com sucesso. }
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'

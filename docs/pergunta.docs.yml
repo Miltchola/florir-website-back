@@ -1,0 +1,147 @@
+tags:
+  - name: Perguntas
+    description: Gerenciamento de Perguntas Frequentes (FAQ).
+
+paths:
+  /perguntas:
+    get:
+      summary: Obter todas as perguntas
+      tags: [Perguntas]
+      description: Retorna uma lista de todas as perguntas frequentes. Este endpoint é público.
+      responses:
+        '200':
+          description: Uma lista de perguntas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pergunta'
+    post:
+      summary: Criar uma nova pergunta
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      description: Adiciona uma nova pergunta ao FAQ. Requer autenticação.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaPayload'
+      responses:
+        '201':
+          description: Pergunta criada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta criada com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /perguntas/{id}:
+    get:
+      summary: Obter pergunta por ID
+      tags: [Perguntas]
+      description: Retorna uma pergunta específica pelo seu ID. Este endpoint é público.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados da pergunta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Atualizar uma pergunta por ID
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      description: Atualiza uma pergunta existente. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaPayload'
+      responses:
+        '200':
+          description: Pergunta atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta atualizada com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Pergunta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Deletar uma pergunta por ID
+      tags: [Perguntas]
+      security:
+        - bearerAuth: []
+      description: Deleta uma pergunta. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pergunta deletada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Pergunta deletada com sucesso. }
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'

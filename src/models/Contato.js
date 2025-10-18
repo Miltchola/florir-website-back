@@ -10,16 +10,17 @@ const contatoSchema = new mongoose.Schema({
     email: {
         type: String,
     },
-    telefone: {
+    telefone: { // DDD + Telefone
         type: String,
     },
-    ddd: {
-        type: String,
-    },
-    whatsapp: {
+    whatsappQRCode: {
         type: String,
         required: true,
     },
+    altText:{
+        type: String,
+        default: 'Imagem do QR-Code'
+    }
 }, {
     timestamps: true
 });

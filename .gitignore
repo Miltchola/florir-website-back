@@ -23,3 +23,9 @@ logs/
 *.tmp
 # OS generated
 Thumbs.db
+
+# Personal
+*.sh
+todo.txt
+test-images/
+.devcontainer/

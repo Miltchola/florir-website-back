@@ -1,99 +1,193 @@
 tags:
-  name: Users
-  description: Rotas relacionadas a usuários
+  - name: Usuários
+    description: 'Autenticação e gerenciamento de perfis de usuário.'
 
 paths:
   /users/register:
     post:
-      summary: Registra um novo usuário
-      tags: [Users]
+      summary: 'Registrar um novo usuário'
+      tags: [Usuários]
+      description: 'Cria uma nova conta de usuário. Este endpoint é público.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegister'
+              $ref: '#/components/schemas/UserRegisterPayload'
       responses:
         '201':
-          description: Usuário registrado com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Erro na requisição
-
-  /users/login:
-    post:
-      summary: Realiza login do usuário
-      tags: [Users]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLogin'
-      responses:
-        '200':
-          description: Login bem-sucedido
+          description: 'Usuário registrado com sucesso.'
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
+                  status:
                     type: string
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  user:
-                    $ref: '#/components/schemas/User'
-        '401':
-          description: Credenciais inválidas
-  
-  /users/{identifier}:
-    get:
-      summary: Busca um usuário por username ou email
-      tags: [Users]
-      parameters:
-        - in: path
-          name: identifier
-          required: true
-          schema:
-            type: string
-          description: Nome de usuário ou email
-      responses:
-        '200':
-          description: Usuário encontrado
+                    example: success
+                  message:
+                    type: string
+                    example: Usuário registrado com sucesso!
+                  data:
+                    type: object
+                    nullable: true
+        '400':
+          description: 'Requisição inválida - Campos ausentes, e-mail inválido ou senha curta.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: Usuário não encontrado
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Conflito - O e-mail fornecido já existe.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                EmailEmUso:
+                  value:
+                    status: "fail"
+                    message: "Este email já está em uso."
 
-  /users/{identifier}/profile:
-    put:
-      summary: Atualiza dados do usuário
-      tags: [Users]
-      parameters:
-        - in: path
-          name: identifier
-          required: true
-          schema:
-            type: string
-          description: Nome de usuário ou email
+  /users/login:
+    post:
+      summary: 'Login para usuários administradores'
+      tags: [Usuários]
+      description: 'Autentica um usuário administrador e retorna um token JWT. O acesso é restrito a usuários com a flag `admin` como verdadeira.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                email:
-                  type: string
+              $ref: '#/components/schemas/UserLoginPayload'
       responses:
         '200':
-          description: Perfil atualizado com sucesso
+          description: 'Login bem-sucedido.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: User logged in successfully!
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      userId:
+                        type: string
+                      username:
+                        type: string
+        '401':
+          description: 'Credenciais inválidas.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                CredenciaisInvalidas:
+                  value:
+                    status: "fail"
+                    message: "Credenciais inválidas."
+        '403':
+          description: 'Acesso negado. Apenas administradores podem fazer login.'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Usuário não encontrado
+          description: 'Usuário não encontrado.'
+          $ref: '#/components/responses/NotFound'
+
+  /users/me:
+    get:
+      summary: 'Obter perfil do usuário atual'
+      tags: [Usuários]
+      security:
+        - bearerAuth: []
+      description: 'Retorna as informações do perfil do usuário atualmente autenticado.'
+      responses:
+        '200':
+          description: 'Dados do perfil do usuário.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    patch:
+      summary: 'Atualizar perfil do usuário atual'
+      tags: [Usuários]
+      security:
+        - bearerAuth: []
+      description: 'Atualiza as informações do perfil (nome de usuário, e-mail ou senha) do usuário autenticado.'
+      requestBody:
+        description: 'Campos para atualizar. Pelo menos um campo deve ser fornecido.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdatePayload'
+      responses:
+        '200':
+          description: 'Perfil atualizado com sucesso.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Perfil atualizado com sucesso.
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 'Requisição inválida - ex: senha muito curta.'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: 'Deletar conta do usuário atual'
+      tags: [Usuários]
+      security:
+        - bearerAuth: []
+      description: 'Deleta a conta do usuário atualmente autenticado.'
+      responses:
+        '200':
+          description: 'Usuário deletado com sucesso.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Usuário deletado com sucesso.
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'

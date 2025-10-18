@@ -1,14 +1,26 @@
 components:
   schemas:
+    # Schemas de Usuário
     User:
       type: object
       properties:
         _id:
           type: string
+          description: O ID único do usuário.
+          example: "60d0fe4f5311236168a109ca"
         username:
           type: string
+          description: O nome do usuário.
+          example: "Usuário Admin"
         email:
           type: string
+          format: email
+          description: O endereço de e-mail do usuário.
+          example: "admin@florir.com"
+        admin:
+          type: boolean
+          description: Indica se o usuário é um administrador.
+          example: true
         createdAt:
           type: string
           format: date-time
@@ -16,7 +28,7 @@ components:
           type: string
           format: date-time
     
-    UserRegister:
+    UserRegisterPayload:
       type: object
       required:
         - username
@@ -25,15 +37,18 @@ components:
       properties:
         username:
           type: string
-          example: "johndoe"
+          example: "Usuário Admin"
         email:
           type: string
-          example: "john@example.com"
+          format: email
+          example: "admin@florir.com"
         password:
           type: string
-          example: "senha123"
+          format: password
+          description: A senha deve ter no mínimo 6 caracteres.
+          example: "senhaForte123"
 
-    UserLogin:
+    UserLoginPayload:
       type: object
       required:
         - email
@@ -41,7 +56,295 @@ components:
       properties:
         email:
           type: string
-          example: "john@example.com"
+          format: email
+          example: "admin@florir.com"
         password:
           type: string
-          example: "senha123"
+          format: password
+          example: "senhaForte123"
+          
+    UserUpdatePayload:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "Admin Atualizado"
+        email:
+          type: string
+          format: email
+          example: "admin_atualizado@florir.com"
+        password:
+          type: string
+          format: password
+          description: A senha deve ter no mínimo 6 caracteres.
+          example: "novaSenhaForte123"
+
+    # Schemas de Produto
+    Produto:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "63f7b2b7e012a4b8c8a7b8b2"
+        imagem:
+          type: string
+          format: uri
+          description: URL da imagem do produto.
+        altText:
+          type: string
+          description: Texto alternativo para a imagem.
+          example: "imagem do produto"
+        nome:
+          type: string
+          example: "Buquê de Rosas Secas"
+        descricao:
+          type: string
+          example: "Um lindo buquê com rosas vermelhas desidratadas."
+        preco:
+          type: number
+          format: float
+          description: Preço do produto.
+          example: 25.50
+        recomendado:
+          type: boolean
+          default: false
+        tipo:
+          type: string
+          example: "Buquê"
+        disponiveis:
+          type: integer
+          description: Quantidade disponível em estoque.
+          example: 10
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProdutoPayload:
+      type: object
+      required:
+        - nome
+      properties:
+        imagem:
+          type: string
+          format: uri
+        altText:
+          type: string
+        nome:
+          type: string
+        descricao:
+          type: string
+        preco:
+          type: number
+          format: float
+        recomendado:
+          type: boolean
+        tipo:
+          type: string
+        disponiveis:
+          type: integer
+
+    # Schemas de Contato
+    Contato:
+      type: object
+      properties:
+        _id:
+          type: string
+        instagram:
+          type: string
+          format: uri
+        tiktok:
+          type: string
+          format: uri
+        email:
+          type: string
+          format: email
+        telefone:
+          type: string
+          description: Número de telefone incluindo DDD.
+          example: "11987654321"
+        whatsappQRCode:
+          type: string
+          format: uri
+          description: URL para a imagem do QR code do WhatsApp.
+        altText:
+          type: string
+          description: Texto alternativo para a imagem do QR code.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    ContatoPayload:
+      type: object
+      required:
+        - whatsappQRCode
+      properties:
+        instagram:
+          type: string
+          format: uri
+        tiktok:
+          type: string
+          format: uri
+        email:
+          type: string
+          format: email
+        telefone:
+          type: string
+        whatsappQRCode:
+          type: string
+          format: uri
+        altText:
+          type: string
+
+    # Schemas de Pergunta
+    Pergunta:
+      type: object
+      properties:
+        _id:
+          type: string
+        question:
+          type: string
+          example: "Qual o tempo de duração das flores?"
+        answer:
+          type: string
+          example: "Nossas flores desidratadas podem durar de 1 a 3 anos."
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    PerguntaPayload:
+      type: object
+      required:
+        - question
+        - answer
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+
+    # Schemas da Seção Hero
+    HeroSection:
+      type: object
+      properties:
+        _id:
+          type: string
+        texto:
+          type: string
+          example: "As melhores flores desidratadas"
+        subtexto:
+          type: string
+          example: "Direto do produtor para sua casa."
+        imagem:
+          type: string
+          format: uri
+          description: URL da imagem principal (hero).
+        altText:
+          type: string
+          description: Texto alternativo para a imagem principal.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    HeroSectionPayload:
+      type: object
+      required:
+        - texto
+        - imagem
+      properties:
+        texto:
+          type: string
+        subtexto:
+          type: string
+        imagem:
+          type: string
+          format: uri
+        altText:
+          type: string
+
+    # Schemas de Imagem do Carrossel
+    ImagemCarrossel:
+      type: object
+      properties:
+        _id:
+          type: string
+        imagem:
+          type: string
+          format: uri
+          description: URL da imagem do carrossel.
+        altText:
+          type: string
+          description: Texto alternativo para a imagem do carrossel.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ImagemCarrosselPayload:
+      type: object
+      required:
+        - imagem
+      properties:
+        imagem:
+          type: string
+          format: uri
+        altText:
+          type: string
+          
+    # Schema de Erro Genérico
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "fail"
+        message:
+          type: string
+          example: "Recurso não encontrado."
+
+  # Respostas Reutilizáveis
+  responses:
+    Unauthorized:
+      description: "Erro de autenticação. O token está ausente, é inválido ou expirou."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            noToken:
+              summary: Nenhum token fornecido
+              value: { status: "fail", message: "Nenhum token fornecido." }
+            tokenExpired:
+              summary: Token expirado
+              value: { status: "fail", message: "Seu token de acesso expirou. Por favor, faça login novamente." }
+    Forbidden:
+      description: "Erro de autorização. O usuário não tem permissão para esta ação."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: "fail"
+            message: "Você não tem permissão para executar esta ação."
+    NotFound:
+      description: O recurso especificado não foi encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: "fail"
+            message: "Recurso não encontrado(a)."

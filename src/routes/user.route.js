@@ -1,19 +1,23 @@
 import express from 'express';
 import userController from '../controller/user.controller.js';
 import verifyToken from '../middleware/jwt.token.middleware.js';
+import { checkIsAdmin } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
-// Rota para registrar um novo usuário
+// Rota para registrar um novo usuário (POST /register)
 router.post('/register', userController.register);
 
-// Rota para autenticar um usuário e obter um token
-router.post('/login', userController.login);
+// Rota para logar o usuário (somente se for Admin) (POST /login)
+router.post('/login', checkIsAdmin, userController.login);
 
-// Rota para buscar um usuário por nome de usuário ou email
-router.get('/:identifier', userController.getUserByIdentifier);
+// Rota para acessar os dados do usuário logado no momento (GET /me)
+router.get('/me', verifyToken, userController.getMe);
 
-// Rota para atualizar as informações do perfil de um usuário
-router.put('/:identifier/profile', verifyToken, userController.updateProfile);
+// Rota para atualizar os dados do usuário logado no momento (PATCH /me)
+router.patch('/me', verifyToken, userController.updateMe);
+
+// Rota para deletar o usuário logado no momento (DELETE /me)
+router.delete('/me', verifyToken, userController.deleteMe);
 
 export default router;

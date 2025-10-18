@@ -1,0 +1,147 @@
+tags:
+  - name: Produtos
+    description: Gerenciamento de produtos.
+
+paths:
+  /produtos:
+    get:
+      summary: Obter todos os produtos
+      tags: [Produtos]
+      description: Retorna uma lista de todos os produtos. Este endpoint é público.
+      responses:
+        '200':
+          description: Uma lista de produtos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Produto'
+    post:
+      summary: Criar um novo produto
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      description: Adiciona um novo produto. Requer autenticação.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoPayload'
+      responses:
+        '201':
+          description: Produto criado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto criado com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Produto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /produtos/{id}:
+    get:
+      summary: Obter produto por ID
+      tags: [Produtos]
+      description: Retorna um produto específico pelo seu ID. Este endpoint é público.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do produto.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    $ref: '#/components/schemas/Produto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Atualizar um produto por ID
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      description: Atualiza um produto existente. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoPayload'
+      responses:
+        '200':
+          description: Produto atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto atualizado com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Produto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Deletar um produto por ID
+      tags: [Produtos]
+      security:
+        - bearerAuth: []
+      description: Deleta um produto. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Produto deletado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Produto deletado com sucesso. }
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'

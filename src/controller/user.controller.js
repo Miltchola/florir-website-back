@@ -1,143 +1,90 @@
 import jwt from 'jsonwebtoken';
-import {
-    registerUser,
-    authenticateUser
-} from '../services/user.service.js';
-import User from '../models/User.js'; // Importe o modelo de usuário
+import { registerUser, authenticateUser } from '../services/user.service.js';
+import User from '../models/User.js';
+import { AppError, ERROR_MESSAGES } from '../utils/errors.js';
+import sendSuccess from '../utils/successResponse.js';
+import bcrypt from "bcrypt";
 
-// Regex simples para validar e-mails
+const handleAsync = fn => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+};
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-const register = async (req, res) => {
+const register = handleAsync(async (req, res, next) => {
     const { username, email, password } = req.body;
-    console.log("Registering user:", req.body);
+    if (!username || !email || !password) throw new AppError(ERROR_MESSAGES.USER_MISSING_FIELDS.statusCode, ERROR_MESSAGES.USER_MISSING_FIELDS.message);
+    if (!isValidEmail(email)) throw new AppError(ERROR_MESSAGES.USER_INVALID_EMAIL.statusCode, ERROR_MESSAGES.USER_INVALID_EMAIL.message);
+    if (password.length < 6) throw new AppError(ERROR_MESSAGES.USER_SHORT_PASSWORD.statusCode, ERROR_MESSAGES.USER_SHORT_PASSWORD.message);
 
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Username, email, and password are required!' });
-    }
+    await registerUser({ username, email, password });
+    sendSuccess(res, 201, null, 'Usuário registrado com sucesso!');
+});
 
-    if (!isValidEmail(email)) {
-        return res.status(400).json({ message: 'Invalid email format.' });
-    }
-
-    if (password.length < 6) {
-        return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
-    }
-
-    try {
-        await registerUser({ username, email, password });
-        return res.status(201).json({ message: 'Usuário registrado com sucesso!' });
-    } catch (error) {
-        console.error("Error registering user:", error);
-        if (error.message.includes('Email already exists')) {
-            return res.status(409).json({ message: 'Email already in use.' });
-        }
-        return res.status(500).json({ message: 'Internal server error.' });
-    }
-};
-
-const login = async (req, res) => {
+const login = handleAsync(async (req, res, next) => {
     const { email, password } = req.body;
-    console.log("Logging in user:", req.body);
-
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required!' });
+        const { statusCode, message } = ERROR_MESSAGES.AUTH_MISSING_CREDENTIALS;
+        throw new AppError(statusCode, message);
+    }
+    
+    const user = await authenticateUser({ email, password });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+    const responseData = { token, userId: user._id, username: user.username };
+    sendSuccess(res, 200, responseData, 'User logged in successfully!');
+});
+
+const getMe = handleAsync(async (req, res, next) => {
+    const user = await User.findById(req.userId).select('username email');
+    
+    if (!user) {
+        const error = ERROR_MESSAGES.NOT_FOUND('Usuário');
+        throw new AppError(error.statusCode, error.message);
+    }
+    
+    sendSuccess(res, 200, user);
+});
+
+const updateMe = handleAsync(async (req, res, next) => {
+    const { username, email, password } = req.body;
+    
+    const updateData = {};
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (password) {
+        if (password.length < 6) throw new AppError(ERROR_MESSAGES.USER_SHORT_PASSWORD.statusCode, ERROR_MESSAGES.USER_SHORT_PASSWORD.message);
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(password, salt);
     }
 
-    try {
-        const user = await authenticateUser({ email, password });
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        console.log("token: ", token);
-        return res.status(200).json({
-            message: 'User logged in successfully!',
-            token,
-            userId: user._id,         // RETORNA O ID DO USUÁRIO
-            username: user.username   // RETORNA O NOME DE USUÁRIO
-        });
-    } catch (error) {
-        console.error("Login error:", error);
-        if (error.message.includes('User not found')) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-        if (error.message.includes('Invalid password')) {
-            return res.status(401).json({ message: 'Invalid credentials.' });
-        }
-        return res.status(500).json({ message: 'Internal server error.' });
+    if (Object.keys(updateData).length === 0) {
+        const { statusCode, message } = ERROR_MESSAGES.UPDATE_NO_FIELDS;
+        throw new AppError(statusCode, message);
     }
-};
 
-const getUserByUsername = async (req, res) => {
-    try {
-        const user = await User.findOne({ username: req.params.username });
-        if (!user) return res.status(404).json({ message: 'User not found.' });
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuário' });
+    const updatedUser = await User.findByIdAndUpdate(req.userId, updateData, { new: true }).select('username email');
+
+    if (!updatedUser) {
+        const error = ERROR_MESSAGES.NOT_FOUND('Usuário');
+        throw new AppError(error.statusCode, error.message);
     }
-};
+    
+    sendSuccess(res, 200, updatedUser, 'Perfil atualizado com sucesso.');
+});
 
-const getUserByEmail = async (req, res) => {
-    try {
-        const user = await User.findOne({ email: req.params.email });
-        if (!user) return res.status(404).json({ message: 'User not found.' });
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuário' });
+const deleteMe = handleAsync(async (req, res, next) => {
+    const user = await User.findByIdAndDelete(req.userId);
+    if (!user) {
+        const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Usuário');
+        throw new AppError(statusCode, message);
     }
-};
-
-const getUserByIdentifier = async (req, res) => {
-    const { identifier } = req.params;
-    try {
-        // Verifica se é email
-        const query = identifier.includes('@')
-            ? { email: identifier }
-            : { username: identifier };
-        const user = await User.findOne(query);
-        if (!user) return res.status(404).json({ message: 'User not found.' });
-        // Retorne os campos desejados
-        res.json({
-            username: user.username,
-            email: user.email,
-
-        });
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuário' });
-    }
-};
-
-const updateProfile = async (req, res) => {
-    const { identifier } = req.params;
-    const { username, email } = req.body;
-
-    try {
-        // Busca por username ou email
-        const query = identifier.includes('@')
-            ? { email: identifier }
-            : { username: identifier };
-
-        const user = await User.findOneAndUpdate(
-            query,
-            { username, email },
-            { new: true }
-        );
-
-        if (!user) return res.status(404).json({ message: 'User not found.' });
-
-        res.json({
-            username: user.username,
-            email: user.email
-        });
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao atualizar perfil do usuário' });
-    }
-};
+    sendSuccess(res, 200, null, 'Usuário deletado com sucesso.');
+});
 
 export default {
     register,
     login,
-    getUserByUsername,
-    getUserByEmail,
-    getUserByIdentifier,
-    updateProfile,
+    getMe,
+    updateMe,
+    deleteMe
 };

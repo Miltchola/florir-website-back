@@ -9,6 +9,8 @@ import userRoute from "./routes/user.route.js";
 import produtoRoute from "./routes/produto.route.js";
 import contatoRoute from "./routes/contato.route.js";
 import perguntaRoute from "./routes/pergunta.route.js";
+import heroSectionRoute from "./routes/heroSection.route.js";
+import imagemCarrosselRoute from "./routes/imagemCarrossel.route.js";
 
 dotenv.config();
 db.connect();
@@ -20,7 +22,7 @@ const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split
 
 const corsOptions = {
   origin: allowedOrigins,
-  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 204
@@ -31,9 +33,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(swaggerMiddleware);
 
-// Rotas públicas
+// Rota pública
 app.get("/", (req, res) => {
-    res.send({message: 'Hello World!'});
+    res.send({message: 'Florir - As melhores flores desidratadas da região!'});
 });
 
 // Rotas da API
@@ -41,6 +43,18 @@ app.use("/users", userRoute);
 app.use("/produtos", produtoRoute);
 app.use("/contatos", contatoRoute);
 app.use("/perguntas", perguntaRoute);
+app.use("/hero-section", heroSectionRoute);
+app.use("/imagens-carrossel", imagemCarrosselRoute);
+
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message
+  });
+});
 
 export default app;
 
@@ -49,6 +63,6 @@ const scriptPath = process.argv[1];
 
 if (scriptPath === __filename) {
   app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}/`);
+    console.log(`Servidor rodando na porta http://localhost:${PORT}/`);
   });
 }

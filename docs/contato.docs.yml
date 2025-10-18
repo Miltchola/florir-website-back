@@ -1,0 +1,147 @@
+tags:
+  - name: Contatos
+    description: Gerenciamento das informações de contato.
+
+paths:
+  /contatos:
+    get:
+      summary: Obter todas as informações de contato
+      tags: [Contatos]
+      description: Retorna todas as entradas de contato. Geralmente, haverá apenas uma. Este endpoint é público.
+      responses:
+        '200':
+          description: Uma lista com as informações de contato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contato'
+    post:
+      summary: Criar nova informação de contato
+      tags: [Contatos]
+      security:
+        - bearerAuth: []
+      description: Adiciona uma nova entrada de contato. Requer autenticação.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContatoPayload'
+      responses:
+        '201':
+          description: Contato criado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Contato criado com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Contato'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /contatos/{id}:
+    get:
+      summary: Obter informação de contato por ID
+      tags: [Contatos]
+      description: Retorna uma informação de contato específica pelo seu ID. Este endpoint é público.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados de contato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Success }
+                  data:
+                    $ref: '#/components/schemas/Contato'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Atualizar informação de contato por ID
+      tags: [Contatos]
+      security:
+        - bearerAuth: []
+      description: Atualiza uma informação de contato existente. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContatoPayload'
+      responses:
+        '200':
+          description: Contato atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Contato atualizado com sucesso. }
+                  data:
+                    $ref: '#/components/schemas/Contato'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Deletar informação de contato por ID
+      tags: [Contatos]
+      security:
+        - bearerAuth: []
+      description: Deleta uma informação de contato. Requer autenticação.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contato deletado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Contato deletado com sucesso. }
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
