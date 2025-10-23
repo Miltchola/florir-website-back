@@ -8,8 +8,13 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
 
     steps:
     - name: Login to Docker Hub
@@ -18,12 +23,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Start MongoDB
-      uses: mongodb/setup-mongodb-action@v1.10.0
-      with:
-        mongodb-version: '4.4'
-
-    - name: Checkout do Código
+    - name: Checkout Code
       uses: actions/checkout@v3
       
     - name: Use Node.js
@@ -31,10 +31,10 @@ jobs:
       with:
         node-version: '18'
         
-    - name: Instalar Dependências
+    - name: Install Dependencies
       run: npm install
       
     - name: Run tests
       run: npm test
       env:
-        MONGO_URI: mongodb://localhost:27017
+        MONGO_URI: mongodb://mongodb:27017/your-test-db-name
