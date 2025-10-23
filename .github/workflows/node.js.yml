@@ -34,6 +34,15 @@ jobs:
     - name: Install Dependencies
       run: npm install
       
+    - name: Wait for MongoDB to be ready
+      run: |
+        echo "Waiting for MongoDB to start..."
+        until nc -z -w10 mongodb 27017; do
+          echo "MongoDB is not yet available, waiting..."
+          sleep 1
+        done
+        echo "MongoDB is up and running!"
+      
     - name: Run tests
       run: npm test
       env:
