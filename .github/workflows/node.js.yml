@@ -36,5 +36,5 @@ jobs:
       
     - name: Run tests
       run: npm test
-      env:git
+      env:
         MONGO_URI: mongodb://localhost:27017
