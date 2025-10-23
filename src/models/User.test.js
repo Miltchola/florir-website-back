@@ -2,13 +2,14 @@ import mongoose from 'mongoose';
 import User from './User.js';
 
 describe('User Model', () => {
-  beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/test_users', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    await User.syncIndexes();
+
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI, {
+    dbName: 'jest_test_db',
   });
+  
+  await User.syncIndexes();
+});
 
   afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
