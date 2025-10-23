@@ -37,4 +37,6 @@ jobs:
     - name: Run tests
       run: npm test
       env:
-        MONGO_URI: mongodb://mongodb:27017/your-test-db-name
+        MONGO_URI: mongodb://mongodb:27017/jest_test_db
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        PORT: 8080
