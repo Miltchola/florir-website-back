@@ -1,131 +1,60 @@
 import userController from './user.controller.js';
+import * as userService from '../services/user.service.js';
 import User from '../models/User.js';
-import { registerUser, authenticateUser } from '../services/user.service.js';
 import jwt from 'jsonwebtoken';
+import sendSuccess from '../utils/successResponse.js';
 
-jest.mock('../models/User.js');
 jest.mock('../services/user.service.js');
+jest.mock('../models/User.js');
 jest.mock('jsonwebtoken');
+jest.mock('../utils/successResponse.js');
 
 describe('userController', () => {
-  let req, res;
+    let req, res, next;
 
-  beforeEach(() => {
-    req = { body: {}, params: {} };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    jest.clearAllMocks();
-  });
-
-  describe('getUserByUsername', () => {
-    it('deve retornar o usuário se encontrado', async () => {
-      req.params.username = 'joao';
-      const fakeUser = { username: 'joao', email: 'joao@email.com' };
-      User.findOne.mockResolvedValue(fakeUser);
-
-      await userController.getUserByUsername(req, res);
-
-      expect(User.findOne).toHaveBeenCalledWith({ username: 'joao' });
-      expect(res.json).toHaveBeenCalledWith(fakeUser);
+    beforeEach(() => {
+        req = { body: {}, params: {}, userId: 'user123' };
+        res = {};
+        next = jest.fn();
+        jest.clearAllMocks();
     });
 
-    it('deve retornar 404 se usuário não encontrado', async () => {
-      req.params.username = 'naoexiste';
-      User.findOne.mockResolvedValue(null);
-
-      await userController.getUserByUsername(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: 'User not found.' });
+    describe('register', () => {
+        it('deve chamar registerUser e enviar uma resposta de sucesso', async () => {
+            req.body = { username: 'test', email: 'test@test.com', password: 'password123' };
+            await userController.register(req, res, next);
+            expect(userService.registerUser).toHaveBeenCalledWith(req.body);
+            expect(sendSuccess).toHaveBeenCalledWith(res, 201, null, 'Usuário registrado com sucesso!');
+        });
     });
 
-    it('deve retornar 500 em caso de erro', async () => {
-      req.params.username = 'erro';
-      User.findOne.mockRejectedValue(new Error('Erro'));
+    describe('login', () => {
+        it('deve autenticar o usuário, gerar um token e enviar uma resposta de sucesso', async () => {
+            const fakeUser = { _id: 'user123', username: 'test' };
+            req.body = { email: 'test@test.com', password: 'password123' };
+            
+            userService.authenticateUser.mockResolvedValue(fakeUser);
+            jwt.sign.mockReturnValue('fakeToken');
 
-      await userController.getUserByUsername(req, res);
+            await userController.login(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Erro ao buscar usuário' });
-    });
-  });
-
-  describe('getUserByEmail', () => {
-    it('deve retornar o usuário se encontrado pelo email', async () => {
-      req.params.email = 'joao@email.com';
-      const fakeUser = { username: 'joao', email: 'joao@email.com' };
-      User.findOne.mockResolvedValue(fakeUser);
-
-      await userController.getUserByEmail(req, res);
-
-      expect(User.findOne).toHaveBeenCalledWith({ email: 'joao@email.com' });
-      expect(res.json).toHaveBeenCalledWith(fakeUser);
+            expect(userService.authenticateUser).toHaveBeenCalledWith(req.body);
+            expect(jwt.sign).toHaveBeenCalledWith({ id: fakeUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            expect(sendSuccess).toHaveBeenCalledWith(res, 200, { token: 'fakeToken', userId: fakeUser._id, username: fakeUser.username }, 'User logged in successfully!');
+        });
     });
 
-    it('deve retornar 404 se usuário não encontrado pelo email', async () => {
-      req.params.email = 'naoexiste@email.com';
-      User.findOne.mockResolvedValue(null);
+    describe('getMe', () => {
+        it('deve buscar e retornar os dados do usuário logado', async () => {
+            const fakeUser = { username: 'test', email: 'test@test.com' };
+            const selectMock = jest.fn().mockResolvedValue(fakeUser);
+            User.findById.mockReturnValue({ select: selectMock });
 
-      await userController.getUserByEmail(req, res);
+            await userController.getMe(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: 'User not found.' });
+            expect(User.findById).toHaveBeenCalledWith('user123');
+            expect(selectMock).toHaveBeenCalledWith('username email');
+            expect(sendSuccess).toHaveBeenCalledWith(res, 200, fakeUser);
+        });
     });
-
-    it('deve retornar 500 em caso de erro', async () => {
-      req.params.email = 'erro@email.com';
-      User.findOne.mockRejectedValue(new Error('Erro'));
-
-      await userController.getUserByEmail(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Erro ao buscar usuário' });
-    });
-  });
-
-  describe('getUserByIdentifier', () => {
-    it('deve buscar por email se identifier for email', async () => {
-      req.params.identifier = 'joao@email.com';
-      const fakeUser = { username: 'joao', email: 'joao@email.com' };
-      User.findOne.mockResolvedValue(fakeUser);
-
-      await userController.getUserByIdentifier(req, res);
-
-      expect(User.findOne).toHaveBeenCalledWith({ email: 'joao@email.com' });
-      expect(res.json).toHaveBeenCalledWith({ username: 'joao', email: 'joao@email.com' });
-    });
-
-    it('deve buscar por username se identifier não for email', async () => {
-      req.params.identifier = 'joao';
-      const fakeUser = { username: 'joao', email: 'joao@email.com' };
-      User.findOne.mockResolvedValue(fakeUser);
-
-      await userController.getUserByIdentifier(req, res);
-
-      expect(User.findOne).toHaveBeenCalledWith({ username: 'joao' });
-      expect(res.json).toHaveBeenCalledWith({ username: 'joao', email: 'joao@email.com' });
-    });
-
-    it('deve retornar 404 se usuário não encontrado', async () => {
-      req.params.identifier = 'naoexiste';
-      User.findOne.mockResolvedValue(null);
-
-      await userController.getUserByIdentifier(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: 'User not found.' });
-    });
-
-    it('deve retornar 500 em caso de erro', async () => {
-      req.params.identifier = 'erro';
-      User.findOne.mockRejectedValue(new Error('Erro'));
-
-      await userController.getUserByIdentifier(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Erro ao buscar usuário' });
-    });
-  });
 });

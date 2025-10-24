@@ -3,7 +3,26 @@ import request from 'supertest';
 import userController from '../controller/user.controller.js';
 import router from './user.route.js';
 
-jest.mock('../controller/user.controller.js');
+// Mock middleware
+jest.mock('../middleware/jwt.token.middleware.js', () => ({
+  __esModule: true,
+  default: (req, res, next) => next(),
+}));
+jest.mock('../middleware/auth.middleware.js', () => ({
+  checkIsAdmin: (req, res, next) => next(),
+}));
+
+// Corrected and completed controller mock
+jest.mock('../controller/user.controller.js', () => ({
+  __esModule: true,
+  default: {
+    register: jest.fn((req, res) => res.status(201).json({ registered: true })),
+    login: jest.fn((req, res) => res.status(200).json({ token: 'jwt-token' })),
+    getMe: jest.fn((req, res) => res.status(200).json({ user: 'data' })),
+    updateMe: jest.fn((req, res) => res.status(200).json({ updated: true })),
+    deleteMe: jest.fn((req, res) => res.status(200).json({ deleted: true })),
+  },
+}));
 
 describe('User Routes', () => {
   let app;
@@ -11,18 +30,17 @@ describe('User Routes', () => {
   beforeAll(() => {
     app = express();
     app.use(express.json());
-    app.use('/users', router);
+    // Use a prefix to match a real-world scenario
+    app.use('/api/users', router);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('deve chamar userController.register ao fazer POST /users/register', async () => {
-    userController.register.mockImplementation((req, res) => res.status(201).json({ registered: true }));
-
+  it('deve chamar userController.register ao fazer POST /api/users/register', async () => {
     const res = await request(app)
-      .post('/users/register')
+      .post('/api/users/register')
       .send({ username: 'joao', email: 'joao@email.com', password: '123456' });
 
     expect(userController.register).toHaveBeenCalled();
@@ -30,25 +48,13 @@ describe('User Routes', () => {
     expect(res.body).toEqual({ registered: true });
   });
 
-  it('deve chamar userController.login ao fazer POST /users/login', async () => {
-    userController.login.mockImplementation((req, res) => res.status(200).json({ token: 'jwt-token' }));
-
+  it('deve chamar userController.login ao fazer POST /api/users/login', async () => {
     const res = await request(app)
-      .post('/users/login')
-      .send({ username: 'joao', email: 'joao@email.com', password: '123456' });
+      .post('/api/users/login')
+      .send({ email: 'joao@email.com', password: '123456' });
 
     expect(userController.login).toHaveBeenCalled();
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ token: 'jwt-token' });
-  });
-
-  it('deve chamar userController.getUserByIdentifier ao fazer GET /users/:identifier', async () => {
-    userController.getUserByIdentifier.mockImplementation((req, res) => res.status(200).json({ username: req.params.identifier }));
-
-    const res = await request(app).get('/users/joao');
-
-    expect(userController.getUserByIdentifier).toHaveBeenCalled();
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ username: 'joao' });
   });
 });
