@@ -1,55 +1,96 @@
-# 🛡️ Backend API com Autenticação JWT
 
-Este projeto é uma API RESTful desenvolvida com **Node.js**, **Express** e **MongoDB**, utilizando **Mongo Express** para visualização do banco de dados e autenticação de usuários via **JWT (JSON Web Token)**.
+-----
 
----
+# Florir Website - Backend
 
-## ✅ Funcionalidades
+Este é o servidor backend oficial do site Florir, construído com Node.js, Express e MongoDB.
 
-### 🔓 Rotas Públicas
-- `POST /users/register` - Cria um novo usuário com nome, e-mail e senha criptografada.
-- `POST /users/login` - Autentica um usuário e retorna um token JWT.
+Ele gerencia toda a lógica de negócios, o banco de dados e a autenticação, incluindo o cadastro de produtos e o upload de imagens para o Cloudflare R2.
 
-### 🔐 Rotas Protegidas
-- `GET /protected` - Retorna mensagem de sucesso apenas se o token JWT for válido no header `Authorization`.
+-----
 
----
-## Lista de Tarefas (to-do-list):
+## Funcionalidades
 
-A aplicação Back-end é utilizada como uma lista de tarefas para o usuário.
-Cada tarefa terá:
+  * **API RESTful:** Construída com Express.js.
+  * **Banco de Dados:** Utiliza MongoDB com Mongoose para modelagem de dados.
+  * **Autenticação:** Rotas seguras apenas para administradores, usando JSON Web Tokens (JWT).
+  * **Armazenamento de Imagens:** Integração com **Cloudflare R2** para upload e exibição de imagens com alta performance.
+  * **Documentação da API:** Inclui Swagger UI para facilitar os testes dos endpoints.
 
--> title (string, obrigatório)
+-----
 
--> description (string, opcional)
+## Como Começar
 
--> completed (boolean, padrão: false)
+Siga estas instruções para obter uma cópia local funcionando para desenvolvimento e testes.
 
--> createdAt (data, padrão: agora)
+### Pré-requisitos
 
--> userId (referência ao usuário que criou)
+  * [Node.js](https://nodejs.org/) (v18 ou mais recente)
+  * [Docker](https://www.docker.com/) (para rodar o banco de dados MongoDB localmente)
 
-## 🧪 Scripts de Teste (requests/)
+### Instalação e Configuração
 
-A pasta `requests/` contém scripts `.sh` com exemplos de:
+1.  **Clone o repositório:**
 
-- Registro bem-sucedido
-- Registro com erro (e-mail inválido, senha fraca, e-mail repetido, mal formatado)
-- Login bem-sucedido
-- Login com erro (credenciais erradas, e-mail inválido, mal formatado)
-- Acesso com token válido
-- Acesso sem token ou com token inválido
+    ```bash
+    git clone https://github.com/seu-usuario/florir-website-back.git
+    cd florir-website-back
+    ```
 
-Execute um script com:
+2.  **Instale as dependências:**
 
-bash
-source requests/auth/POST_Login_Success.sh
+    ```bash
+    npm install
+    ```
 
----
-## Utilização:
+3.  **Configure as variáveis de ambiente:**
+    Crie um arquivo chamado `.env` na raiz do projeto e copie o conteúdo do `.env.example` (ou a estrutura abaixo) para ele.
 
-Instale as dependência com:
-npm install
+    ```bash
+    cp .env.example .env
+    ```
 
-Inicie a aplicação com:
-npm run start:app
+    Em seguida, preencha suas credenciais locais e do Cloudflare.
+
+4.  **Inicie o banco de dados local:**
+    Este comando usa o `docker compose` para iniciar um contêiner MongoDB.
+
+    ```bash
+    npm run start:database
+    ```
+
+5.  **Rode o servidor:**
+    Este comando inicia o servidor em modo de desenvolvimento usando o `nodemon`.
+
+    ```bash
+    npm run start:app
+    ```
+
+Seu servidor agora deve estar rodando em `http://localhost:8080`.
+
+-----
+
+## Variáveis de Ambiente
+
+Seu arquivo `.env` deve ser configurado para que a aplicação funcione.
+
+| Variável | Descrição | Exemplo |
+| :--- | :--- | :--- |
+| `PORT` | A porta em que o servidor Express irá rodar. | `8080` |
+| `MONGO_URI` | String de conexão para seu banco MongoDB. | `mongodb://root:example@localhost:27017` |
+| `MONGO_DB_NAME`| O nome do banco de dados a ser usado. | `florir_local` |
+| `JWT_SECRET` | Uma string longa e aleatória para assinar JWTs. | `abc1234...` |
+| `CORS_ORIGINS` | Lista de URLs de frontend permitidas (separadas por vírgula). | `http://localhost:3000,https://seu-front.vercel.app` |
+| `R2_ACCOUNT_ID` | Seu ID de Conta do Cloudflare. | `...` |
+| `R2_ACCESS_KEY_ID`| A Chave de Acesso (Access Key) do seu token R2. | `...` |
+| `R2_SECRET_ACCESS_KEY`| A Chave Secreta (Secret Key) do seu token R2. | `...` |
+| `R2_BUCKET_NAME`| O nome do seu bucket R2. | `florir-uploads` |
+| `R2_PUBLIC_DOMAIN`| O domínio público conectado ao seu bucket R2. | `https://media.seu-site.com` |
+
+-----
+
+## Documentação da API
+
+Este projeto usa Swagger para documentação da API. Assim que o servidor estiver rodando, você pode acessar a documentação interativa em:
+
+**[http://localhost:8080/docs](https://www.google.com/search?q=http://localhost:8080/docs)**
