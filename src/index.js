@@ -4,6 +4,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import db from "./database/configdb.js";
 import swaggerMiddleware from "./middleware/swagger.js";
+import { MulterError } from "multer";
 
 import userRoute from "./routes/user.route.js";
 import produtoRoute from "./routes/produto.route.js";
@@ -47,12 +48,29 @@ app.use("/hero-section", heroSectionRoute);
 app.use("/imagens-carrossel", imagemCarrosselRoute);
 
 app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
+  let error = { ...err };
+  error.message = err.message;
 
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message
+  error.statusCode = err.statusCode || 500;
+  error.status = err.status || 'error';
+
+  if (err instanceof MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      error.statusCode = 413;
+      error.status = 'fail';
+      error.message = 'Arquivo muito grande. O limite é de 10MB.';
+    }
+    
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      error.statusCode = 400;
+      error.status = 'fail';
+      error.message = `Nome do campo do arquivo é inválido. Verifique se está usando 'imagem' ou 'whatsappQRCode' corretamente.`;
+    }
+  }
+
+  res.status(error.statusCode).json({
+    status: error.status,
+    message: error.message
   });
 });
 

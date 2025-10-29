@@ -1,12 +1,18 @@
 import Contato from '../models/Contato.js';
 import { AppError, ERROR_MESSAGES } from '../utils/errors.js';
 import sendSuccess from '../utils/successResponse.js';
+import { uploadFile, deleteFile } from '../services/r2.service.js';
 
 const handleAsync = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 const createContato = handleAsync(async (req, res, next) => {
+    if (req.file) {
+      const qrCodeUrl = await uploadFile(req.file.buffer, req.file.mimetype);
+      req.body.whatsappQRCode = qrCodeUrl;
+    }
+
     const newContato = new Contato(req.body);
     await newContato.save();
     sendSuccess(res, 201, newContato, 'Contato criado com sucesso.');
@@ -27,20 +33,43 @@ const getContatoById = handleAsync(async (req, res, next) => {
 });
 
 const updateContatoById = handleAsync(async (req, res, next) => {
+    let oldQrCodeUrl = null;
+
+    if (req.file) {
+      const oldContato = await Contato.findById(req.params.id);
+      if (oldContato && oldContato.whatsappQRCode) {
+        oldQrCodeUrl = oldContato.whatsappQRCode;
+      }
+      
+      const newQrCodeUrl = await uploadFile(req.file.buffer, req.file.mimetype);
+      req.body.whatsappQRCode = newQrCodeUrl;
+    }
+    
     const contato = await Contato.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!contato) {
         const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Contato');
         throw new AppError(statusCode, message);
     }
+
+    if (oldQrCodeUrl) {
+      await deleteFile(oldQrCodeUrl);
+    }
+    
     sendSuccess(res, 200, contato, 'Contato atualizado com sucesso.');
 });
 
 const deleteContatoById = handleAsync(async (req, res, next) => {
-    const contato = await Contato.findByIdAndDelete(req.params.id);
+    const contato = await Contato.findById(req.params.id);
     if (!contato) {
         const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Contato');
         throw new AppError(statusCode, message);
     }
+
+    await Contato.findByIdAndDelete(req.params.id);
+    if (contato.whatsappQRCode) {
+        await deleteFile(contato.whatsappQRCode);
+    }
+
     sendSuccess(res, 200, null, 'Contato deletado com sucesso.');
 });
 
