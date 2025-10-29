@@ -1,12 +1,18 @@
 import Produto from '../models/Produto.js';
 import { AppError, ERROR_MESSAGES } from '../utils/errors.js';
 import sendSuccess from '../utils/successResponse.js';
+import { uploadFile, deleteFile } from '../services/r2.service.js';
 
 const handleAsync = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 const createProduto = handleAsync(async (req, res, next) => {
+    if (req.file) {
+      const imageUrl = await uploadFile(req.file.buffer, req.file.mimetype);
+      req.body.imagem = imageUrl;
+    }
+
     const newProduto = new Produto(req.body);
     await newProduto.save();
     sendSuccess(res, 201, newProduto, 'Produto criado com sucesso.');
@@ -27,24 +33,50 @@ const getProdutoById = handleAsync(async (req, res, next) => {
 });
 
 const updateProdutoById = handleAsync(async (req, res, next) => {
+    let oldImageUrl = null;
+
+    if (req.file) {
+      const oldProduto = await Produto.findById(req.params.id);
+      if (oldProduto && oldProduto.imagem) {
+        oldImageUrl = oldProduto.imagem;
+      }
+      
+      const newImageUrl = await uploadFile(req.file.buffer, req.file.mimetype);
+      req.body.imagem = newImageUrl;
+    }
+
     const updatedProduto = await Produto.findByIdAndUpdate(
         req.params.id,
         req.body,
         { new: true, runValidators: true }
     );
+
     if (!updatedProduto) {
         const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Produto');
         throw new AppError(statusCode, message);
     }
+
+    if (oldImageUrl) {
+      await deleteFile(oldImageUrl);
+    }
+
     sendSuccess(res, 200, updatedProduto, 'Produto atualizado com sucesso.');
 });
 
 const deleteProdutoById = handleAsync(async (req, res, next) => {
-    const deletedProduto = await Produto.findByIdAndDelete(req.params.id);
+    const deletedProduto = await Produto.findById(req.params.id);
+    
     if (!deletedProduto) {
         const { statusCode, message } = ERROR_MESSAGES.NOT_FOUND('Produto');
         throw new AppError(statusCode, message);
     }
+
+    await Produto.findByIdAndDelete(req.params.id);
+
+    if (deletedProduto.imagem) {
+        await deleteFile(deletedProduto.imagem);
+    }
+
     sendSuccess(res, 200, null, 'Produto deletado com sucesso.');
 });
 
