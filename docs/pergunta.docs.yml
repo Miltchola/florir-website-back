@@ -16,8 +16,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     type: array
                     items:
@@ -42,8 +46,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Pergunta criada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta criada com sucesso.
                   data:
                     $ref: '#/components/schemas/Pergunta'
         '401':
@@ -70,13 +78,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     $ref: '#/components/schemas/Pergunta'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       summary: Atualizar uma pergunta por ID
       tags: [Perguntas]
@@ -103,8 +114,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Pergunta atualizada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta atualizada com sucesso.
                   data:
                     $ref: '#/components/schemas/Pergunta'
         '401':
@@ -113,7 +128,6 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
     delete:
       summary: Deletar uma pergunta por ID
       tags: [Perguntas]
@@ -134,8 +148,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Pergunta deletada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Pergunta deletada com sucesso.
                   data:
                     type: object
                     nullable: true

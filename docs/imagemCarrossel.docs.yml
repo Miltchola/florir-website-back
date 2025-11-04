@@ -16,8 +16,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     type: array
                     items:
@@ -27,13 +31,23 @@ paths:
       tags: [Imagens do Carrossel]
       security:
         - bearerAuth: []
-      description: Adiciona uma nova imagem ao carrossel. Requer autenticação.
+      description: Adiciona uma nova imagem ao carrossel. Requer autenticação e upload de imagem.
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ImagemCarrosselPayload'
+              type: object
+              required:
+                - imagem
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem (limite 10MB)."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem do carrossel.
       responses:
         '201':
           description: Imagem criada com sucesso.
@@ -42,14 +56,20 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Imagem do carrossel criada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Imagem do carrossel criada com sucesso.
                   data:
                     $ref: '#/components/schemas/ImagemCarrossel'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
 
   /imagens-carrossel/{id}:
     get:
@@ -70,19 +90,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     $ref: '#/components/schemas/ImagemCarrossel'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       summary: Atualizar uma imagem do carrossel por ID
       tags: [Imagens do Carrossel]
       security:
         - bearerAuth: []
-      description: Atualiza uma imagem existente do carrossel. Requer autenticação.
+      description: Atualiza uma imagem existente do carrossel. Requer autenticação e pode incluir novo upload.
       parameters:
         - name: id
           in: path
@@ -90,11 +113,18 @@ paths:
           schema:
             type: string
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ImagemCarrosselPayload'
+              type: object
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem (limite 10MB)."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem do carrossel.
       responses:
         '200':
           description: Imagem atualizada com sucesso.
@@ -103,8 +133,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Imagem do carrossel atualizada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Imagem do carrossel atualizada com sucesso.
                   data:
                     $ref: '#/components/schemas/ImagemCarrossel'
         '401':
@@ -113,7 +147,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
     delete:
       summary: Deletar uma imagem do carrossel por ID
       tags: [Imagens do Carrossel]
@@ -134,8 +169,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Imagem do carrossel deletada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Imagem do carrossel deletada com sucesso.
                   data:
                     type: object
                     nullable: true

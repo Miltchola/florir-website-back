@@ -16,8 +16,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     type: array
                     items:
@@ -27,13 +31,45 @@ paths:
       tags: [Produtos]
       security:
         - bearerAuth: []
-      description: Adiciona um novo produto. Requer autenticação.
+      description: Adiciona um novo produto. Requer autenticação e upload de imagem.
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ProdutoPayload'
+              type: object
+              required:
+                - nome
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem do produto (limite 10MB)."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem.
+                  example: "imagem do produto"
+                nome:
+                  type: string
+                  example: "Buquê de Rosas Secas"
+                descricao:
+                  type: string
+                  example: "Um lindo buquê com rosas vermelhas desidratadas."
+                preco:
+                  type: number
+                  format: float
+                  description: Preço do produto.
+                  example: 25.50
+                recomendado:
+                  type: boolean
+                  default: false
+                tipo:
+                  type: string
+                  example: "Buquê"
+                disponiveis:
+                  type: integer
+                  description: Quantidade disponível em estoque.
+                  example: 10
       responses:
         '201':
           description: Produto criado com sucesso.
@@ -42,14 +78,20 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Produto criado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto criado com sucesso.
                   data:
                     $ref: '#/components/schemas/Produto'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
 
   /produtos/{id}:
     get:
@@ -70,19 +112,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     $ref: '#/components/schemas/Produto'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       summary: Atualizar um produto por ID
       tags: [Produtos]
       security:
         - bearerAuth: []
-      description: Atualiza um produto existente. Requer autenticação.
+      description: Atualiza um produto existente. Requer autenticação. Pode incluir um novo upload de imagem.
       parameters:
         - name: id
           in: path
@@ -90,11 +135,39 @@ paths:
           schema:
             type: string
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ProdutoPayload'
+              type: object
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem do produto (limite 10MB)."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem.
+                  example: "imagem do produto"
+                nome:
+                  type: string
+                  example: "Buquê de Rosas Secas"
+                descricao:
+                  type: string
+                  example: "Um lindo buquê com rosas vermelhas desidratadas."
+                preco:
+                  type: number
+                  format: float
+                  description: Preço do produto.
+                  example: 25.50
+                recomendado:
+                  type: boolean
+                tipo:
+                  type: string
+                  example: "Buquê"
+                disponiveis:
+                  type: integer
+                  description: Quantidade disponível em estoque.
+                  example: 10
       responses:
         '200':
           description: Produto atualizado com sucesso.
@@ -103,8 +176,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Produto atualizado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto atualizado com sucesso.
                   data:
                     $ref: '#/components/schemas/Produto'
         '401':
@@ -113,7 +190,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
     delete:
       summary: Deletar um produto por ID
       tags: [Produtos]
@@ -134,8 +212,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Produto deletado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Produto deletado com sucesso.
                   data:
                     type: object
                     nullable: true

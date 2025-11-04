@@ -16,8 +16,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     type: array
                     items:
@@ -27,13 +31,34 @@ paths:
       tags: [Contatos]
       security:
         - bearerAuth: []
-      description: Adiciona uma nova entrada de contato. Requer autenticação.
+      description: Adiciona uma nova entrada de contato. Requer autenticação e upload de QR Code.
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              type: object
+              required:
+                - whatsappQRCode
+              properties:
+                whatsappQRCode:
+                  type: string
+                  format: binary
+                  description: "Imagem do QR Code do WhatsApp (limite 10MB)."
+                instagram:
+                  type: string
+                  format: uri
+                tiktok:
+                  type: string
+                  format: uri
+                email:
+                  type: string
+                  format: email
+                telefone:
+                  type: string
+                  example: "11987654321"
+                altText:
+                  type: string
       responses:
         '201':
           description: Contato criado com sucesso.
@@ -42,14 +67,20 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Contato criado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Contato criado com sucesso.
                   data:
                     $ref: '#/components/schemas/Contato'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
 
   /contatos/{id}:
     get:
@@ -70,19 +101,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     $ref: '#/components/schemas/Contato'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       summary: Atualizar informação de contato por ID
       tags: [Contatos]
       security:
         - bearerAuth: []
-      description: Atualiza uma informação de contato existente. Requer autenticação.
+      description: Atualiza uma informação de contato existente. Requer autenticação e pode incluir novo upload.
       parameters:
         - name: id
           in: path
@@ -90,11 +124,29 @@ paths:
           schema:
             type: string
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ContatoPayload'
+              type: object
+              properties:
+                whatsappQRCode:
+                  type: string
+                  format: binary
+                  description: "Imagem do QR Code do WhatsApp (limite 10MB)."
+                instagram:
+                  type: string
+                  format: uri
+                tiktok:
+                  type: string
+                  format: uri
+                email:
+                  type: string
+                  format: email
+                telefone:
+                  type: string
+                  example: "11987654321"
+                altText:
+                  type: string
       responses:
         '200':
           description: Contato atualizado com sucesso.
@@ -103,8 +155,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Contato atualizado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Contato atualizado com sucesso.
                   data:
                     $ref: '#/components/schemas/Contato'
         '401':
@@ -113,7 +169,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
     delete:
       summary: Deletar informação de contato por ID
       tags: [Contatos]
@@ -134,8 +191,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Contato deletado com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Contato deletado com sucesso.
                   data:
                     type: object
                     nullable: true
