@@ -16,8 +16,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     type: array
                     items:
@@ -27,13 +31,30 @@ paths:
       tags: [Seção Hero]
       security:
         - bearerAuth: []
-      description: Adiciona uma nova seção hero. Requer autenticação.
+      description: Adiciona uma nova seção hero. Requer autenticação e upload de imagem.
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/HeroSectionPayload'
+              type: object
+              required:
+                - texto
+                - imagem
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem principal (limite 10MB)."
+                texto:
+                  type: string
+                  example: "As melhores flores desidratadas"
+                subtexto:
+                  type: string
+                  example: "Direto do produtor para sua casa."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem principal.
       responses:
         '201':
           description: Seção hero criada com sucesso.
@@ -42,14 +63,20 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Seção Hero criada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Seção Hero criada com sucesso.
                   data:
                     $ref: '#/components/schemas/HeroSection'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
 
   /hero-section/{id}:
     get:
@@ -71,19 +98,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Success }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Success
                   data:
                     $ref: '#/components/schemas/HeroSection'
         '404':
           $ref: '#/components/responses/NotFound'
-
     patch:
       summary: Atualizar uma seção hero por ID
       tags: [Seção Hero]
       security:
         - bearerAuth: []
-      description: Atualiza uma seção hero existente. Requer autenticação.
+      description: Atualiza uma seção hero existente. Requer autenticação e pode incluir novo upload.
       parameters:
         - name: id
           in: path
@@ -91,11 +121,24 @@ paths:
           schema:
             type: string
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/HeroSectionPayload'
+              type: object
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: "Arquivo de imagem principal (limite 10MB)."
+                texto:
+                  type: string
+                  example: "As melhores flores desidratadas"
+                subtexto:
+                  type: string
+                  example: "Direto do produtor para sua casa."
+                altText:
+                  type: string
+                  description: Texto alternativo para a imagem principal.
       responses:
         '200':
           description: Seção hero atualizada com sucesso.
@@ -104,8 +147,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Seção Hero atualizada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Seção Hero atualizada com sucesso.
                   data:
                     $ref: '#/components/schemas/HeroSection'
         '401':
@@ -114,7 +161,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-          
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
     delete:
       summary: Deletar uma seção hero por ID
       tags: [Seção Hero]
@@ -135,8 +183,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: { type: string, example: success }
-                  message: { type: string, example: Seção Hero deletada com sucesso. }
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Seção Hero deletada com sucesso.
                   data:
                     type: object
                     nullable: true

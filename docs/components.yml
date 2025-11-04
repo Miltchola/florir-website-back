@@ -27,7 +27,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-    
     UserRegisterPayload:
       type: object
       required:
@@ -47,7 +46,6 @@ components:
           format: password
           description: A senha deve ter no mínimo 6 caracteres.
           example: "senhaForte123"
-
     UserLoginPayload:
       type: object
       required:
@@ -62,7 +60,6 @@ components:
           type: string
           format: password
           example: "senhaForte123"
-          
     UserUpdatePayload:
       type: object
       properties:
@@ -121,8 +118,8 @@ components:
         updatedAt:
           type: string
           format: date-time
-
     ProdutoPayload:
+      description: "Schema usado internamente; para requisições, veja o schema multipart/form-data no endpoint."
       type: object
       required:
         - nome
@@ -178,11 +175,11 @@ components:
         updatedAt:
           type: string
           format: date-time
-          
     ContatoPayload:
+      description: "Schema usado internamente; para requisições, veja o schema multipart/form-data no endpoint."
       type: object
       required:
-        - whatsappQRCode
+        - whatsappQRCode # Este 'required' é para o *dado*, não o upload
       properties:
         instagram:
           type: string
@@ -219,7 +216,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-          
     PerguntaPayload:
       type: object
       required:
@@ -256,12 +252,12 @@ components:
         updatedAt:
           type: string
           format: date-time
-          
     HeroSectionPayload:
+      description: "Schema usado internamente; para requisições, veja o schema multipart/form-data no endpoint."
       type: object
       required:
         - texto
-        - imagem
+        - imagem # Este 'required' é para o *dado*, não o upload
       properties:
         texto:
           type: string
@@ -292,18 +288,18 @@ components:
         updatedAt:
           type: string
           format: date-time
-
     ImagemCarrosselPayload:
+      description: "Schema usado internamente; para requisições, veja o schema multipart/form-data no endpoint."
       type: object
       required:
-        - imagem
+        - imagem # Este 'required' é para o *dado*, não o upload
       properties:
         imagem:
           type: string
           format: uri
         altText:
           type: string
-          
+
     # Schema de Erro Genérico
     Error:
       type: object
@@ -348,3 +344,12 @@ components:
           example:
             status: "fail"
             message: "Recurso não encontrado(a)."
+    PayloadTooLarge:
+      description: "Arquivo muito grande. O limite é de 10MB."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: "fail"
+            message: "Arquivo muito grande. O limite é de 10MB."
