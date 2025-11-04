@@ -128,7 +128,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-          
     patch:
       summary: 'Atualizar perfil do usuário atual'
       tags: [Usuários]
@@ -163,7 +162,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-
     delete:
       summary: 'Deletar conta do usuário atual'
       tags: [Usuários]
