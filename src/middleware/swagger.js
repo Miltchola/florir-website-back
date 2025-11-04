@@ -1,9 +1,11 @@
 import { serve, setup } from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import express from "express";
+import path from 'path';
 
 const router = express.Router();
 const PORT = process.env.PORT || 8080;
+const docsPath = path.join(process.cwd(), 'docs', '**', '*.yml');
 
 const options = {
   definition: {
@@ -38,7 +40,7 @@ const options = {
       },
     ],
   },
-  apis: ["./docs/**/*.yml"], 
+  apis: [docsPath], 
 };
 
 const swaggerSpec = swaggerJsdoc(options);
